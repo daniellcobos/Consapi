@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve apitest
+After=network.target
+
+[Service]
+User=administrador
+Group=www-data
+WorkingDirectory=/home/administrador/consapitest
+Environment="PATH=/home/administrador/consapitest/env/bin"
+ExecStart=/home/administrador/consapitest/env/bin/uwsgi --ini constapitest.ini
+
+[Install]
+WantedBy=multi-user.target

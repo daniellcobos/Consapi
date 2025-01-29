@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Formato Cliente</title>
+  <style>
+    /* Estilos para el formulario (puedes personalizarlos) */
+    form {
+      width: 500px;
+      margin: 0 auto;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="text"], select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+    }
+    .blue-header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blue-header">
+    <h2>Información del Cliente</h2>
+  </div>
+ <div class="blue-header" id="resultados">
+    <h2>Resultados</h2>
+  </div>
+  <form>
+
+    <label for="sector">Sector:</label>
+    <select id="sector" name="sector">
+      <option value="Industria Alimentos">Industria Alimentos</option>
+         <option value="Industria otros bienes">Industria otros bienes</option>
+ <option value="Comercio">Comercio</option>
+ <option value="Educativo">Educativo</option>
+ <option value="Salud">Salud</option>
+
+      <option value="otro">Otro</option>
+    </select>
+
+    <div class="blue-header">
+      <h2>Detalles del Personal</h2>
+    </div>
+
+    <label for="tipo_publico">Tipo de Público:</label>
+    <select id="tipo_publico" name="tipo_publico">
+      <option value="Administrativo">Administrativo</option>
+      <option value="Operativo">Operativo</option>
+      <option value="Flotante">Flotante</option>
+    </select>
+
+    <label for="num_mujeres">Número de Mujeres:</label>
+    <input type="number" id="num_mujeres" name="num_mujeres">
+
+    <label for="num_hombres">Número de Hombres:</label>
+    <input type="number" id="num_hombres" name="num_hombres">
+
+    <label for="dias_laborales">Días laborales/mes:</label>
+    <input type="number" id="dias_laborales" name="dias_laborales">
+
+    <label for="horas_laborales">Horas laborales/día:</label>
+    <input type="number" id="horas_laborales" name="horas_laborales">
+
+    <label for="tpref">Referencia Papel:</label>
+    <select id="tpref" name="tpref">
+        <option value="na" selected> No Aplica </option>
+        {% for tp in tplist  %}
+
+            <option value="{{ tp }}"> {{ tp }}</option>
+        {% endfor %}
+    </select>
+
+
+  <label for="htref">Referencia Toallas:</label>
+    <select id="htref" name="htref">
+    <option value="na" selected> No Aplica </option>
+        {% for ht in htlist  %}
+            <option value="{{ ht }}"> {{ ht }}</option>
+        {% endfor %}
+    </select>
+
+
+  <label for="sref">Referencia Jabon:</label>
+    <select id="sref" name="sref">
+    <option value="na" selected> No Aplica </option>
+        {% for s in slist  %}
+            <option value="{{ s }}"> {{ s }}</option>
+        {% endfor %}
+    </select>
+
+
+  <label for="srref">Referencia Servilletas:</label>
+    <select id="srref" name="srref">
+    <option value="na" selected> No Aplica </option>
+        {% for sr in srlist  %}
+            <option value="{{ sr }}"> {{ sr }}</option>
+        {% endfor %}
+    </select>
+    <label for="lmref">Referencia Limpiones:</label>
+    <select id="lmref" name="lmref">
+    <option value="na" selected> No Aplica </option>
+        {% for lm in lmlist  %}
+            <option value="{{ lm }}"> {{ lm }}</option>
+        {% endfor %}
+    </select>
+
+
+
+    <br><br>
+
+    <button type="submit">Generar Simulador</button>
+    <button type="button">Generar Formato Cliente</button>
+  </form>
+
+</body>
+
+<script>
+    let historico = 1
+    document.querySelector('form').addEventListener('submit', function(event) {
+  event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
+
+  // Obtiene los valores del formulario
+
+  const sector = document.getElementById('sector').value;
+  const tipoPublico = document.getElementById('tipo_publico').value;
+  const numMujeres = document.getElementById('num_mujeres').value;
+  const numHombres = document.getElementById('num_hombres').value;
+  const diasLaborales = document.getElementById('dias_laborales').value;
+  const horasLaborales = document.getElementById('horas_laborales').value;
+  const tpref = document.getElementById('tpref').value;
+
+  const htref = document.getElementById('htref').value;
+
+  const srref = document.getElementById('srref').value;
+  const lmref = document.getElementById('lmref').value;
+  const sref = document.getElementById('sref').value;
+
+
+  // Crea un objeto con los datos del formulario
+  const formData = {
+
+    sector: sector,
+    tipoPublico: tipoPublico,
+    numMujeres: numMujeres,
+    numHombres: numHombres,
+    diasLaborales: diasLaborales,
+    horasLaborales: horasLaborales,
+      tpref: tpref,
+      htref: htref,
+      srref: srref,
+      sref: sref,
+      lmref: lmref,
+  };
+    console.log(formData)
+  // Envía los datos usando fetch
+  fetch('/api_ce', {  // Reemplaza con la URL de tu servidor
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Maneja la respuesta del servidor (opcional)
+    writeConsumo(JSON.stringify(data))
+  })
+  .catch(error => {
+    // Maneja errores (opcional)
+    console.error('Error al enviar el formulario:', error);
+  });
+});
+
+const writeConsumo = (datos) => {
+    const consmumo = document.createElement('p')
+    consmumo.innerText = datos
+    const datosdom = document.getElementById('resultados')
+    datosdom.appendChild(consmumo)
+}
+
+</script>
+
+
+</html>
