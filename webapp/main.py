@@ -1,12 +1,24 @@
 from flask import Flask,render_template,request
 from os import path
 import pandas as pd
+from webapp import auth
+from webapp.sqla import sqla
+from webapp.login import login_manager
+from flask_login import current_user, login_required
+import config
 
 app = Flask(__name__)
+app.config.from_object(config.config['development'])
+login_manager.init_app(app)
+sqla.init_app(app)
 
+
+app.register_blueprint(auth.bp)
 parameterspath =  path.join(app.root_path,'static','ParametrosSimulador.xlsx')
 
+
 @app.route('/')
+@login_required
 def index():  # put application's code here
     #read excel parameters
     parametros = pd.read_excel(parameterspath, sheet_name='Parametros')
