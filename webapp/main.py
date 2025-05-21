@@ -1,14 +1,27 @@
 from flask import Flask,render_template,request
 from os import path
 import pandas as pd
+from webapp import auth
+from webapp.sqla import sqla
+from webapp.login import login_manager
+from flask_login import current_user, login_required
+import config
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+app.config.from_object(config.config['development'])
+login_manager.init_app(app)
+sqla.init_app(app)
+CORS(app, origins = ['https://project-b2b-edexa.vercel.app','https://ptools.synapsis-rs.com/','https://www.edexa.com.co','www.edexa.com.co'],methods=['POST', 'GET', 'OPTIONS'])
+app.register_blueprint(auth.bp)
 parameterspath =  path.join(app.root_path,'static','ParametrosSimulador.xlsx')
 
+
 @app.route('/')
+@login_required
 def index():  # put application's code here
     #read excel parameters
+    apikey = 'asdklfLCJKVLvnclklskhdW09232dkja92235adj'
     parametros = pd.read_excel(parameterspath, sheet_name='Parametros')
     tplist = parametros["Ref_Papel"].dropna().tolist()
     htlist = parametros["Ref_Toallas"].dropna().tolist()
@@ -16,15 +29,17 @@ def index():  # put application's code here
     srlist = parametros["Ref_Servilletas"].dropna().tolist()
     lmlist = parametros["Ref_Limpiones"].dropna().tolist()
     print(parametros)
-    return render_template("apitest.html", tplist=tplist,srlist=srlist, htlist = htlist, slist = slist, lmlist = lmlist)
+    return render_template("apitest.html", tplist=tplist,srlist=srlist, htlist = htlist, slist = slist, lmlist = lmlist, apikey = apikey)
 
 
 def calculoconsumo(tlhombres,tlmujeres,pc,rc,cat,tipoPublico,sector,tipos,skuprod):
     if skuprod != 'na':
         try:
+            tipos['Tipo_Bano'] = tipos['Tipo_Bano'].str.lower()
+            tipos['Categoría'] = tipos['Categoría'].str.lower()
         #pc y rc son los dataframes de precio de categoria y rendimiento de categoria
             tipopublicofilt = tipos.loc[
-                (tipos['Tipo_Bano'] == tipoPublico) & (tipos['Categoría'] == cat), ['Usos_Disp_Hora_Mujer',
+                (tipos['Tipo_Bano'] == tipoPublico.casefold()) & (tipos['Categoría'] == cat.casefold()), ['Usos_Disp_Hora_Mujer',
                                                                                                   'Usos_Disp_Hora_Hombre']]
             tpmujerph = tipopublicofilt['Usos_Disp_Hora_Mujer'].tolist()[0]
             tphombreph = tipopublicofilt['Usos_Disp_Hora_Hombre'].tolist()[0]
@@ -45,7 +60,7 @@ def calculoconsumo(tlhombres,tlmujeres,pc,rc,cat,tipoPublico,sector,tipos,skupro
         except Exception as e:
             consmensual = 0
             preciocons = 0
-            print(e)
+            print(e,"error de calculo")
         return(consmensual,preciocons)
     else:
         return("No Aplica","No Aplica")
@@ -73,7 +88,9 @@ def apitest():  # put application's code here
     elif request.method == 'POST':
         tipos = pd.read_excel(parameterspath, sheet_name='Tipos')
         data = request.json
-
+        if data['apikey'] != 'asdklfLCJKVLvnclklskhdW09232dkja92235adj':
+            return 'No Autorizado'
+        print(data)
         #tiempo laboral
         tlhombres = int(data['numHombres']) * int(data['diasLaborales']) * int(data['horasLaborales'])
         tlmujeres = int(data['numMujeres']) * int(data['diasLaborales']) * int(data['horasLaborales'])
@@ -107,5 +124,15 @@ def apitest():  # put application's code here
         consmensualsr, precioconstsr = calculoconsumo(tlhombres, tlmujeres, psr, rsr, 'Servilletas', tipoPublico, sector, tipos, skusr)
         consmensuallm, precioconstlm = calculoconsumo(tlhombres, tlmujeres, plm, rlm, 'Limpiones', tipoPublico, sector,
                                                       tipos, skulm)
+
         return {'consumoph':consmensualph, "consumolm":consmensuallm, 'consumotoallas':consmensualth, 'consumoserv':consmensualsr,
                 'consumojabon':consmensualj }
+
+
+@app.route('/guia')
+@login_required
+def guia():  # put application's code here
+    #read excel parameters
+    return render_template("guia.html")
+
+

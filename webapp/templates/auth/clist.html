@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="container">
+       <form method="post">
+    <div class="form-group" >
+          <label for="client">Cliente</label><br>
+        <select id="client" name="client" class="selectpicker show-tick"  data-container="#maincontainer" data-width="50%" data-live-search="true" data-style="btn-primary" data-style="btn-primary">
+        </select>
+    </div>
+   <div class="form-group" >
+            <hr>
+          <input class="btn btn-primary" type="submit" value="Filtrar">
+            </div>
+   </form>
+    </div>
+<div class="container">
+ <table class="table table-striped">
+     <thead class="thead-light">
+      <tr>
+          <th>Usuario</th>  <th>Acciones</th>
+      </tr>
+     </thead>
+     <tbody id="tbody">
+
+     </tbody>
+ </table>
+</div>
+    <div class="container">
+     {% if message %}
+     <div class="alert alert-primary" role="alert">{{ message }}</div>
+    {% endif %}
+    </div>
+
+
+
+
+    <script>
+      const options = {{ clients | safe }}
+    const cliente = document.getElementById("client")
+      const tbody = document.getElementById("tbody")
+for (const o of options) {
+    const option = document.createElement("option")
+    option.value = o
+    option.innerText = o
+    option.style.fontFamily = 'Century Gothic', 'Futura', 'Didact Gothic'
+    cliente.appendChild(option)
+
+}
+const list = {{ list|safe }}
+for (const l of list){
+    const tr = document.createElement("tr")
+    const usuario = document.createElement("td")
+    const acciones = document.createElement("td")
+    const deletebutton = document.createElement("span")
+    deletebutton.className = "material-icons"
+    const deletelink = document.createElement("a")
+    deletelink.href = "delete/" + l
+    deletelink.innerText = "delete"
+    deletebutton.appendChild(deletelink)
+    const passwordbutton = document.createElement("span")
+    passwordbutton.className = "material-icons"
+    const passwordlink = document.createElement("a")
+    passwordlink.href = "password/" + l
+    passwordlink.innerText = "lock"
+    passwordbutton.appendChild(passwordlink)
+    deletebutton.appendChild(deletelink)
+    acciones.appendChild(deletebutton)
+    acciones.appendChild(passwordbutton)
+    usuario.innerText = l
+    tr.appendChild(usuario)
+    tr.appendChild(acciones)
+    tbody.appendChild(tr)
+}
+
+    </script>
+{% endblock %}

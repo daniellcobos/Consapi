@@ -30,6 +30,8 @@
 
   <div class="blue-header">
     <h2>Información del Cliente</h2>
+      <a style="color: white;" href="/auth/logout">Salir</a>
+      <a style="color: white;" href="/guia">Guia</a>
   </div>
  <div class="blue-header" id="resultados">
     <h2>Resultados</h2>
@@ -118,7 +120,7 @@
     <br><br>
 
     <button type="submit">Generar Simulador</button>
-    <button type="button">Generar Formato Cliente</button>
+
   </form>
 
 </body>
@@ -147,7 +149,7 @@
 
   // Crea un objeto con los datos del formulario
   const formData = {
-
+    apikey: "asdklfLCJKVLvnclklskhdW09232dkja92235adj",
     sector: sector,
     tipoPublico: tipoPublico,
     numMujeres: numMujeres,
