@@ -2,6 +2,7 @@ from flask import Flask,render_template,request
 from os import path
 import pandas as pd
 from webapp import auth
+from webapp import vendor
 from webapp.sqla import sqla
 from webapp.login import login_manager
 from flask_login import current_user, login_required
@@ -14,6 +15,7 @@ login_manager.init_app(app)
 sqla.init_app(app)
 CORS(app, origins = ['https://project-b2b-edexa.vercel.app','https://ptools.synapsis-rs.com/','https://www.edexa.com.co','www.edexa.com.co'],methods=['POST', 'GET', 'OPTIONS'])
 app.register_blueprint(auth.bp)
+app.register_blueprint(vendor.bp)
 parameterspath =  path.join(app.root_path,'static','ParametrosSimulador.xlsx')
 
 
