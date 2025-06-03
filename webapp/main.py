@@ -65,7 +65,7 @@ def calculoconsumo(tlhombres,tlmujeres,pc,rc,cat,tipoPublico,sector,tipos,skupro
             print(e,"error de calculo")
         return(consmensual,preciocons)
     else:
-        return("No Aplica","No Aplica")
+        return(0,"No Aplica")
 
 def getSku(ref):
     if type(ref) == int:
@@ -130,6 +130,20 @@ def apitest():  # put application's code here
         return {'consumoph':consmensualph, "consumolm":consmensuallm, 'consumotoallas':consmensualth, 'consumoserv':consmensualsr,
                 'consumojabon':consmensualj }
 
+@app.route('/api_refs', methods = ['GET'])
+def get_api_refs():
+    parametros = pd.read_excel(parameterspath, sheet_name='Parametros')
+    tplist = parametros["Ref_Papel"].dropna().tolist()
+    tplist = [{"id":int(ref.split(' ')[0]),"name":ref} for ref in tplist]
+    htlist = parametros["Ref_Toallas"].dropna().tolist()
+    htlist = [{"id":int(ref.split(' ')[0]),"name":ref} for ref in htlist]
+    slist = parametros["Ref_Jabon"].dropna().tolist()
+    slist = [{"id":int(ref.split(' ')[0]),"name":ref} for ref in slist]
+    srlist = parametros["Ref_Servilletas"].dropna().tolist()
+    srlist = [{"id": int(ref.split(' ')[0]), "name": ref} for ref in srlist]
+    lmlist = parametros["Ref_Limpiones"].dropna().tolist()
+    lmlist =  [{"id": int(ref.split(' ')[0]), "name": ref} for ref in lmlist]
+    return {"tplist":tplist,"htlist":htlist,"slist":slist,"lmlist":lmlist,"srlist":srlist}
 
 @app.route('/guia')
 @login_required

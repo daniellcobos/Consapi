@@ -11,85 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            padding-top: 80px; /* Ajuste para navbar fija */
-        }
-        .logo {
-            font-weight: 600;
-            color: #333;
-        }
-        .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: top 0.3s;
-        }
-        .main-grid {
-            align-items: flex-start; /* Alinea los elementos al inicio */
-        }
-        .vertical-steps-indicator ul { list-style: none; padding-left: 0; }
-        .vertical-steps-indicator .step {
-            padding: 12px 15px; margin-bottom: 10px; border-radius: 8px;
-            border: 1px solid #e5e7eb; transition: all 0.3s ease;
-            display: flex; align-items: center; font-weight: 500; color: #4b5563;
-        }
-        .vertical-steps-indicator .step .step-number {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 28px; height: 28px; border-radius: 50%;
-            background-color: #e5e7eb; color: #4b5563;
-            font-weight: bold; margin-right: 12px; font-size: 0.9em;
-        }
-        .vertical-steps-indicator .step.active {
-            background-color: #eff6ff; border-color: #60a5fa; color: #1d4ed8;
-        }
-        .vertical-steps-indicator .step.active .step-number {
-            background-color: #3b82f6; color: white;
-        }
-        .vertical-steps-indicator .step.completed {
-            background-color: #f0fdf4; border-color: #86efac; color: #166534;
-        }
-        .vertical-steps-indicator .step.completed .step-number {
-            background-color: #22c55e; color: white;
-        }
-        .step-content {
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-        }
-        .fade-enter-active { opacity: 1; transform: translateY(0); }
-        .fade-enter-from { opacity: 0; transform: translateY(20px); }
-        .btn-secondary {
-            padding: 0.75rem 1.5rem; background-color: #6b7280; color: white;
-            font-weight: 500; border-radius: 0.5rem; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
-            transition: all 0.2s;
-        }
-        .btn-secondary:hover { background-color: #4b5563; transform: translateY(-1px); }
-        .btn-disabled { background-color: #9ca3af !important; cursor: not-allowed !important; }
-        .product-card {
-            padding: 1.5rem; border-radius: 0.75rem; border: 1px solid #e5e7eb;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
-            transition: all 0.3s ease;
-        }
-        .product-card:hover { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -2px rgba(0,0,0,0.03); transform: translateY(-2px); }
-
-        /* Estilos para layout de producto en 2 columnas */
-        .recommendation-layout { display: flex; flex-direction: column; gap: 1rem; }
-        @media (min-width: 768px) { /* md breakpoint */
-            .recommendation-layout { flex-direction: row; gap: 1.5rem; }
-        }
-        .image-column { flex: 0 0 auto; width: 100%; max-width: 200px; margin: auto; }
-        @media (min-width: 768px) { .image-column { width: 150px; margin: 0; } }
-        .product-image { width: 100%; height: auto; object-fit: contain; border-radius: 0.5rem; border: 1px solid #e5e7eb; background-color: white; padding: 0.5rem; }
-        .text-column { flex: 1 1 auto; }
-        .product-title { font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 0.75rem; }
-        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem 1rem; font-size: 0.875rem; color: #4b5563; margin-bottom: 1rem; }
-        .details-grid p span:first-child { color: #6b7280; }
-        .calculated-values p { font-size: 0.9rem; margin-bottom: 0.5rem; padding: 0.5rem; background-color: #f9fafb; border-radius: 0.375rem; border: 1px solid #f3f4f6; }
-        .calculated-values .value, .calculated-values .price-value, .calculated-values .outlay-value { font-weight: 600; color: #1e40af; }
-        .calculated-values .usage-context { font-size: 0.8rem; color: #6b7280; }
-        .stat-container { text-align: center; padding: 1rem; }
-        .stat-number { font-size: 3rem; font-weight: bold; color: #1d4ed8; line-height: 1; }
-        .stat-number .percentage { font-size: 1.5rem; vertical-align: super; }
-        .stat-text { font-size: 0.9rem; color: #4b5563; margin-top: 0.5rem; }
-    </style>
+     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 
 <body>
@@ -140,11 +62,11 @@
                         <ul>
                             <li id="nav-step-1" class="step active"><span class="step-number">1</span> Sector Empresa</li>
                             <li id="nav-step-2" class="step"><span class="step-number">2</span> Tamaño Empresa</li>
-                            <li id="nav-step-3" class="step"><span class="step-number">3</span> Demografía y Baños</li>
-                            <li id="nav-step-4" class="step"><span class="step-number">4</span> Tipos de Publico</li>
-                            <li id="nav-step-5" class="step"><span class="step-number">5</span> Estimación Consumo</li>
-                            <li id="nav-step-6" class="step"><span class="step-number">6</span> Mezcla Segmentos</li>
-                            <li id="nav-step-7" class="step"><span class="step-number">7</span> Recomendación</li>
+                            <li id="nav-step-3" class="step"><span class="step-number">3</span> Jornada Laboral</li>
+                            <li id="nav-step-4" class="step"><span class="step-number">4</span> Demografía y Baños</li>
+                            <li id="nav-step-5" class="step"><span class="step-number">5</span> Tipos de Publico</li>
+                            <li id="nav-step-6" class="step"><span class="step-number">6</span> Seleccion de referencias</li>
+                            <li id="nav-step-7" class="step"><span class="step-number">7</span> Estimación Consumo</li>
                         </ul>
                     </nav>
                 </aside>
@@ -237,8 +159,37 @@
                     </div>
 
                     <div id="step-3" class="step-content hidden fade-enter-active vertical-steps-indicator bg-white p-6 rounded-xl shadow-lg border border-gray-100 self-start">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-3">3</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Jornada Laboral</h2>
+                        </div>
+                        <div class="space-y-5 mb-8">
+                            <p class="text-gray-600 font-medium">Ingresa los días trabajados al mes y las horas trabajadas al día:</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="daysWorkedPerMonth" class="block text-sm font-medium text-gray-700 mb-1">Días trabajados al mes:</label>
+                                    <input type="number" id="daysWorkedPerMonth" name="daysWorkedPerMonth" min="1" max="31" value="20" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200" placeholder="Ej: 20">
+                                </div>
+                                <div>
+                                    <label for="hoursWorkedPerDay" class="block text-sm font-medium text-gray-700 mb-1">Horas trabajadas al día:</label>
+                                    <input type="number" id="hoursWorkedPerDay" name="hoursWorkedPerDay" min="1" max="24" value="8" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200" placeholder="Ej: 8">
+                                </div>
+                            </div>
+                            <p id="workHoursError" class="text-red-500 text-sm mt-2 hidden">Por favor, ingresa valores válidos para días y horas.</p>
+                        </div>
+                        <div class="flex justify-between mt-8">
+                             <button id="back-step-3" class="btn-secondary flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Atrás
+                            </button>
+                            <button id="next-step-3" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 flex items-center">
+                                Siguiente <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 inline-block" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="step-4" class="step-content hidden fade-enter-active vertical-steps-indicator bg-white p-6 rounded-xl shadow-lg border border-gray-100 self-start">
                          <div class="flex items-center mb-6">
-                             <div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-3">3</div>
+                             <div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-3">4</div>
                              <h2 class="text-2xl font-bold text-gray-800">Demografía y Baños</h2>
                          </div>
                          <div class="space-y-8">
@@ -265,14 +216,14 @@
                              </div>
                          </div>
                          <div class="flex justify-between mt-8">
-                             <button id="back-step-3" class="btn-secondary flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Atrás</button>
-                             <button id="next-step-3" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 flex items-center">Siguiente <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 inline-block" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
+                             <button id="back-step-4" class="btn-secondary flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Atrás</button>
+                             <button id="next-step-4" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 flex items-center">Siguiente <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 inline-block" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
                          </div>
                     </div>
 
-                    <div id="step-4" class="step-content hidden fade-enter-active vertical-steps-indicator bg-white p-6 rounded-xl shadow-lg border border-gray-100 self-start">
+                    <div id="step-5" class="step-content hidden fade-enter-active vertical-steps-indicator bg-white p-6 rounded-xl shadow-lg border border-gray-100 self-start">
                         <div class="flex items-center mb-6">
-                            <div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-3">4</div>
+                            <div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-3">5</div>
                             <h2 class="text-2xl font-bold text-gray-800">Tipos de Público</h2>
                         </div>
                         <div class="space-y-5 mb-8">
@@ -294,87 +245,58 @@
                              <p id="audienceError" class="text-red-500 text-sm mt-3 hidden bg-red-50 p-2 rounded-lg border border-red-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>Error en la distribución del público.</p>
                         </div>
                         <div class="flex justify-between mt-8">
-                            <button id="back-step-4" class="btn-secondary flex items-center">
+                            <button id="back-step-5" class="btn-secondary flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Atrás
                            </button>
-                           <button id="next-step-4" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 flex items-center">
+                           <button id="next-step-5" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 flex items-center">
                                 Calcular Consumo <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd" /></svg>
                            </button>
                         </div>
                     </div>
 
-                    <div id="step-5" class="step-content hidden fade-enter-active vertical-steps-indicator bg-white p-6 rounded-xl shadow-lg border border-gray-100 self-start">
-                        <div class="flex items-center mb-6"><div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-3">5</div><h2 class="text-2xl font-bold text-gray-800">Estimación de Consumo Mensual</h2></div>
+                    <div id="step-6-new-references" class="step-content hidden fade-enter-active vertical-steps-indicator bg-white p-6 rounded-xl shadow-lg border border-gray-100 self-start">
+                         <div class="flex items-center mb-6">
+                            <div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-3">6</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Seleccion de Referencias</h2>
+                        </div>
+                        <div class="space-y-5 mb-8">
+                            <div class="relative">
+                                 <label for="phrefs" class="block text-sm font-medium text-gray-700 mb-2">Referencia Papel Higienico:</label>
+                                    <select id="phrefs" name="phrefs" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 appearance-none pr-10 bg-white">
+                                        <option value="na">Ninguna</option>
+                                    </select>
+                                 <label for="htrefs" class="block text-sm font-medium text-gray-700 mb-2">Referencias Toallas de Manos:</label>
+                                 <select id="htrefs" name="htrefs" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 appearance-none pr-10 bg-white">
+                                     <option value="na">Ninguna</option>
+                                    </select>
+                                 <label for="srefs" class="block text-sm font-medium text-gray-700 mb-2">Referencias Jabon de Manos:</label>
+                                 <select id="srefs" name="srefs" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 appearance-none pr-10 bg-white">
+                                     <option value="na">Ninguna</option>
+                                    </select>
+                            </div>
+                        <div class="flex justify-between mt-8">
+                             <button id="back-step-6-new-ref" class="btn-secondary flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Atrás
+                            </button>
+                            <button id="next-step-6-new-ref" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 flex items-center">
+                                Ver Estimación <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 inline-block" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div id="step-7-estimation" class="step-content hidden fade-enter-active vertical-steps-indicator bg-white p-6 rounded-xl shadow-lg border border-gray-100 self-start">
+                        <div class="flex items-center mb-6"><div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-3">7</div><h2 class="text-2xl font-bold text-gray-800">Estimación de Consumo Mensual</h2></div>
                         <div class="mb-6"><p class="text-gray-600 bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-400 font-medium"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>Basado en los datos proporcionados y las tasas de uso estándar, el consumo mensual estimado es:</p></div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"><div class="flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full mb-4 mx-auto"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div><h3 class="text-lg font-bold text-blue-800 text-center mb-2">Papel Higiénico</h3><div class="flex items-center justify-center"><p id="result-toilet-paper" class="text-3xl font-bold text-blue-900 text-center tracking-tight">-- usos/mes</p></div><div class="mt-4 pt-3 border-t border-blue-200"><p class="text-xs text-blue-700 text-center font-medium">Consumo estimado basado en frecuencia de uso promedio</p></div></div>
                             <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-5 rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"><div class="flex items-center justify-center w-12 h-12 bg-green-600 text-white rounded-full mb-4 mx-auto"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg></div><h3 class="text-lg font-bold text-green-800 text-center mb-2">Toallas de Manos</h3><div class="flex items-center justify-center"><p id="result-hand-towels" class="text-3xl font-bold text-green-900 text-center tracking-tight">-- usos/mes</p></div><div class="mt-4 pt-3 border-t border-green-200"><p class="text-xs text-green-700 text-center font-medium">Consumo estimado basado en frecuencia de uso promedio</p></div></div>
                             <div class="bg-gradient-to-br from-amber-50 to-yellow-50 p-5 rounded-xl border border-yellow-200 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"><div class="flex items-center justify-center w-12 h-12 bg-amber-500 text-white rounded-full mb-4 mx-auto"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg></div><h3 class="text-lg font-bold text-amber-800 text-center mb-2">Jabón de Manos</h3><div class="flex items-center justify-center"><p id="result-hand-soap" class="text-3xl font-bold text-amber-900 text-center tracking-tight">-- usos/mes</p></div><div class="mt-4 pt-3 border-t border-amber-200"><p class="text-xs text-amber-700 text-center font-medium">Consumo estimado basado en frecuencia de uso promedio</p></div></div>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6"><div class="flex items-start"><div class="flex-shrink-0 mt-0.5"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg></div><p class="ml-3 text-sm text-gray-500">Cálculos basados en una semana laboral de 42 horas y tasas de uso promedio por hora. Estos valores pueden variar según los hábitos específicos de su equipo.</p></div></div>
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6"><div class="flex items-start"><div class="flex-shrink-0 mt-0.5"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg></div><p class="ml-3 text-sm text-gray-500">Cálculos basados en las horas y días laborales proporcionados y tasas de uso promedio. Estos valores pueden variar según los hábitos específicos de su equipo.</p></div></div>
                         <div class="flex justify-between mt-8">
-                            <button id="back-step-5" class="btn-secondary flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Atrás</button>
-                            <button id="next-step-5" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 flex items-center">Siguiente<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
-                        </div>
-                    </div>
-
-                    <div id="step-6" class="step-content hidden fade-enter-active vertical-steps-indicator bg-white p-6 rounded-xl shadow-lg border border-gray-100 self-start">
-                         <div class="flex items-center mb-6"><div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-3">6</div><h2 class="text-2xl font-bold text-gray-800">Selección de Mezcla de Segmentos</h2></div>
-                         <p class="text-gray-600 mb-4">Define la distribución porcentual deseada entre los segmentos de productos. La suma debe ser 100%.</p>
-                         <div class="overflow-x-auto mb-6 rounded-lg border border-gray-200">
-                             <table class="w-full text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th scope="col" class="px-6 py-3 whitespace-nowrap">SEGMENTO</th><th scope="col" class="px-6 py-3 whitespace-nowrap bg-indigo-50 text-indigo-800 font-semibold">TORK (Recomendado)</th><th scope="col" class="px-6 py-3 whitespace-nowrap">KCP</th><th scope="col" class="px-6 py-3 whitespace-nowrap">ELITE</th></tr></thead><tbody><tr class="bg-white border-b hover:bg-gray-50"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">BUSCA PRECIO</td><td class="px-6 py-4 bg-indigo-50 text-indigo-700">UNIVERSAL</td><td class="px-6 py-4">SCOTT BASIC</td><td class="px-6 py-4">CLASIC</td></tr><tr class="bg-white border-b hover:bg-gray-50"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">BUSCA CALIDAD</td><td class="px-6 py-4 bg-indigo-50 text-indigo-700">ADVANCED</td><td class="px-6 py-4">SCOTT ESENTIAL DISEÑO y RENDIMIENTO</td><td class="px-6 py-4">PLUS</td></tr><tr class="bg-white hover:bg-gray-50"><td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">BUSCA CALIDAD Y CONFORT</td><td class="px-6 py-4 bg-indigo-50 text-indigo-700">PREMIUM</td><td class="px-6 py-4">SCOTT ESENTIAL FLUJO CENTRAL</td><td class="px-6 py-4">EXCELLENCE</td></tr></tbody></table>
-                         </div>
-                         <div class="bg-blue-50 border-l-4 border-blue-400 text-blue-800 p-4 rounded-lg mb-6 text-sm shadow-sm"><h4 class="font-semibold mb-1">Ventaja del Portafolio TORK:</h4><p>Generalmente, el portafolio TORK ofrece mayor eficiencia en comparación con:</p><ul class="list-disc list-inside ml-4 mt-1 space-y-1"><li>KCP: Entre un <strong>4% y 8%</strong> más eficiente.</li><li>Elite: Entre un <strong>6% y 15%</strong> más eficiente.</li></ul></div>
-                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-4">
-                              <div><label for="percentBuscaPrecio" class="block text-sm font-medium text-gray-700 mb-1">Busca Precio (%)</label><input type="number" id="percentBuscaPrecio" name="percentBuscaPrecio" min="0" max="100" value="30" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-center text-lg font-medium segment-percent transition duration-150 ease-in-out"></div>
-                              <div><label for="percentBuscaCalidad" class="block text-sm font-medium text-gray-700 mb-1">Busca Calidad (%)</label><input type="number" id="percentBuscaCalidad" name="percentBuscaCalidad" min="0" max="100" value="50" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-center text-lg font-medium segment-percent transition duration-150 ease-in-out"></div>
-                              <div><label for="percentBuscaConfort" class="block text-sm font-medium text-gray-700 mb-1">Busca Calidad y Confort (%)</label><input type="number" id="percentBuscaConfort" name="percentBuscaConfort" min="0" max="100" value="20" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-center text-lg font-medium segment-percent transition duration-150 ease-in-out"></div>
-                         </div>
-                         <div class="text-right mb-8 mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200"><span id="percentTotal" class="text-lg font-bold text-indigo-700">Total: 100%</span><p id="percentError" class="text-red-600 text-sm mt-1 hidden font-medium">La suma de los porcentajes debe ser 100%.</p></div>
-                         <div class="flex justify-between mt-8">
-                            <button id="back-step-6" class="btn-secondary flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Atrás</button>
-                            <button id="next-step-6" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 flex items-center">Ver Recomendación<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
-                         </div>
-                    </div>
-
-                    <div id="step-7" class="step-content hidden fade-enter-active vertical-steps-indicator bg-white p-6 rounded-xl shadow-lg border border-gray-100 self-start">
-                        <div class="flex items-center mb-6"><div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-3">7</div><h2 class="text-2xl font-bold text-gray-800">Recomendación de Productos Tork</h2></div>
-                        <p class="text-gray-600 mb-6 bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-400 font-medium"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>Basado en tu mezcla de segmentos seleccionada y el consumo estimado, te recomendamos la siguiente combinación de productos Tork:</p>
-                        <div id="product-recommendation-list" class="space-y-6">
-                            <div class="product-card bg-gradient-to-br from-blue-50 to-indigo-50">
-                                <div class="flex items-center mb-4"> <div class="flex-shrink-0 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center mr-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                </div>
-                                <h3 class="text-lg font-semibold text-blue-800">Papel Higiénico Recomendado</h3>
-                                </div>
-                                <div id="recommended-toilet-paper" class="recommendation-content">
-                                    <p class="italic">Calculando...</p>
-                                </div>
-                            </div>
-                            <div class="product-card bg-gradient-to-br from-green-50 to-emerald-50">
-                                <div class="flex items-center mb-4"> <div class="flex-shrink-0 w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center mr-3">
-                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
-                                </div>
-                                <h3 class="text-lg font-semibold text-green-800">Toalla de Manos Recomendada</h3>
-                                </div>
-                                <div id="recommended-hand-towel" class="recommendation-content">
-                                    <p class="italic">Calculando...</p>
-                                </div>
-                            </div>
-                            <div class="product-card bg-gradient-to-br from-amber-50 to-yellow-50">
-                                <div class="flex items-center mb-4"> <div class="flex-shrink-0 w-10 h-10 bg-amber-500 text-white rounded-full flex items-center justify-center mr-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
-                                </div>
-                                <h3 class="text-lg font-semibold text-amber-800">Jabón de Manos Recomendado</h3>
-                                </div>
-                                <div id="recommended-hand-soap" class="recommendation-content">
-                                    <p class="italic">Calculando...</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
-                            <button id="back-step-7" class="btn-secondary flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Atrás</button>
-                            <button id="restartButton" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>Reiniciar Calculadora</button>
+                            <button id="back-step-7-est" class="btn-secondary flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>Atrás</button>
+                            <button id="restartButtonNewLocation" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>Reiniciar Calculadora</button>
                         </div>
                     </div>
                 </main>
@@ -392,68 +314,49 @@
 
     <script>
     // --- Constantes, Tasas, Datos de Productos ---
-    const WORK_HOURS_PER_WEEK = 42;
-    const WEEKS_PER_YEAR = 52;
+    // WORK_HOURS_PER_WEEK and AVG_MONTHLY_WORK_HOURS are replaced by dynamic calculation from user input
+    const WEEKS_PER_YEAR = 52; // Still potentially useful for other contexts, but not for primary monthly calc
     const MONTHS_PER_YEAR = 12;
-    const AVG_MONTHLY_WORK_HOURS = (WORK_HOURS_PER_WEEK * WEEKS_PER_YEAR) / MONTHS_PER_YEAR; // Aprox 182
 
     const RATES = {
-        women: { toiletPaper: 0.38, handTowels: 0.25, handSoap: 0.44 },
-        men: { toiletPaper: 0.04, handTowels: 0.25, handSoap: 0.19 }
+        women: { toiletPaper: 0.38, handTowels: 0.25, handSoap: 0.44 }, // uses per person per hour
+        men: { toiletPaper: 0.04, handTowels: 0.25, handSoap: 0.19 }    // uses per person per hour
     };
 
     const SIZE_DEFAULTS = {
         small: 30, medium: 125, large: 300
     };
 
-    const torkProducts = {
-        papelHigienico: [
-            { codigo: '71610', descripcion: 'Tork SmartOne® Papel Higiénico', metros: 200, hojas: 2, color: 'Blanco', calidad: 'Universal', papel: 'Precortado', rollosXPaca: 4, dispensador: '83,700', precioUnitario: 55000, imagenURL: 'https://cefco.vtexassets.com/arquivos/ids/156992-1200-auto?v=638599444322570000&width=1200&height=auto&aspect=true' },
-            { codigo: '71613', descripcion: 'Tork SmartOne® Papel Higiénico', metros: 200, hojas: 2, color: 'Natural', calidad: 'Universal', papel: 'Precortado', rollosXPaca: 4, dispensador: '83,700', precioUnitario: 52000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/paper/bath-tissue/71613_tork_smartone_toilet_roll_natural.png?width=1000' },
-            { codigo: '71611', descripcion: 'Tork SmartOne® Mini Papel Higiénico', metros: 100, hojas: 2, color: 'Blanco', calidad: 'Universal', papel: 'Precortado', rollosXPaca: 12, dispensador: '83,701', precioUnitario: 75000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/paper/bath-tissue/71611_tork_smartone_mini_toilet_roll_white.png?width=1000' },
-            { codigo: '71612', descripcion: 'Tork SmartOne® Mini Papel Higiénico', metros: 100, hojas: 2, color: 'Natural', calidad: 'Advanced', papel: 'Precortado', rollosXPaca: '2x6', dispensador: '83,701', precioUnitario: 85000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/paper/bath-tissue/71612_tork_smartone_mini_toilet_roll_natural.png?width=1000' },
-            { codigo: '71157', descripcion: 'Tork® Papel Higiénico Jumbo', metros: 250, hojas: 2, color: 'Blanco', calidad: 'Advanced', papel: 'Continuo', rollosXPaca: 4, dispensador: '201,588', precioUnitario: 65000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/paper/bath-tissue/71157_tork_jumbo_toilet_roll_advanced_white.png?width=1000' },
-            { codigo: '71457', descripcion: 'Tork® Papel Higiénico Jumbo', metros: 250, hojas: 2, color: 'Natural', calidad: 'Advanced', papel: 'Continuo', rollosXPaca: 4, dispensador: '201,588', precioUnitario: 62000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/paper/bath-tissue/71457_tork_jumbo_toilet_roll_advanced_natural.png?width=1000' },
-        ],
-        toallasManos: [
-            { codigo: '73575', descripcion: 'Tork® Toalla de Manos Flujo Central', metros: 100, hojas: 3, color: 'Blanco', calidad: 'Universal', papel: 'Precortada', rollosXPaca: '6', dispensador: '83160 / M5', precioUnitario: 90000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/paper/hand-towels/73575_tork_centrefeed_towel_universal_white.png?width=1000' },
-            { codigo: '73689', descripcion: 'Tork® Toalla de Manos Flujo Central', metros: 100, hojas: 3, color: 'Natural', calidad: 'Universal', papel: 'Precortada', rollosXPaca: '6', dispensador: '83160 / M5', precioUnitario: 85000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/paper/hand-towels/73689_tork_centrefeed_towel_universal_natural.png?width=1000' },
-            { codigo: '73686', descripcion: 'Tork® Toalla de Manos Flujo Central', metros: 100, hojas: 3, color: 'Natural', calidad: 'Advanced', papel: 'Precortada', rollosXPaca: '6', dispensador: '83160 / M5', precioUnitario: 95000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/paper/hand-towels/73686_tork_centrefeed_towel_advanced_natural.png?width=1000' },
-            { codigo: '290059', descripcion: 'Tork Matic® Toalla de Manos en Rollo Premium', metros: 100, hojas: 2, color: 'Blanco', calidad: 'Premium', papel: 'Continuo (Matic)', rollosXPaca: 6, dispensador: 'H1', precioUnitario: 110000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/paper/hand-towels/290059_tork_matic_hand_towel_roll_premium_white.png?width=1000' },
-        ],
-        jabonManos: [
-            { codigo: '80541', descripcion: 'Tork® Jabón en Espuma Antibacterial para Manos', volumen: '1.000 ml', tipo: 'Antibacterial', calidad: 'Universal', extra: 'NA', paca: 6, dispensador: '83530 - 83620', precioUnitario: 150000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/skin-care/soap/80541_tork_antibacterial_foam_soap.png?width=1000' },
-            { codigo: '80506', descripcion: 'Tork® Jabón Líquido para Manos', volumen: '1.000 ml', tipo: 'Suave', calidad: 'Universal', extra: 'NA', paca: 6, dispensador: '83510', precioUnitario: 120000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/skin-care/soap/80506_tork_mild_liquid_soap.png?width=1000' },
-            { codigo: '80550', descripcion: 'Tork® Jabón mini Liquido para Manos', volumen: '475 ml', tipo: 'Suave', calidad: 'Advanced', extra: 'NA', paca: 8, dispensador: '83550', precioUnitario: 100000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/skin-care/soap/80550_tork_mild_mini_liquid_soap.png?width=1000' },
-            { codigo: '80530', descripcion: 'Tork® Jabón en espuma para Manos', volumen: '1.000 ml', tipo: 'Suave', calidad: 'Premium', extra: 'NA', paca: 6, dispensador: '83530 - 83620', precioUnitario: 160000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/skin-care/soap/80530_tork_mild_foam_soap.png?width=1000' },
-            { codigo: '80510', descripcion: 'Tork® Jabón Liquido Extra Higiene para Manos', volumen: '1.000 ml', tipo: 'Limpieza Profunda', calidad: 'Premium', extra: 'NA', paca: 6, dispensador: '83510', precioUnitario: 140000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/skin-care/soap/80510_tork_extra_hygiene_liquid_soap.png?width=1000' },
-            { codigo: '80560', descripcion: 'Tork® Jabón mini para Cabello y Cuerpo', volumen: '475 ml', tipo: 'Suave', calidad: 'Premium', extra: 'NA', paca: 8, dispensador: '83550', precioUnitario: 110000, imagenURL: 'https://www.tork.com.co/globalassets/tork-products/skin-care/soap/80560_tork_hair__body_mini_liquid_soap.png?width=1000' },
-        ]
-    };
-    const qualityMapping = { buscaPrecio: 'Universal', buscaCalidad: 'Advanced', buscaConfort: 'Premium' };
-
     // --- Selectores de Elementos del DOM ---
     const steps = {
-        step1: document.getElementById('step-1'), step2: document.getElementById('step-2'),
-        step3: document.getElementById('step-3'), step4: document.getElementById('step-4'), // New step
-        step5: document.getElementById('step-5'), step6: document.getElementById('step-6'),
-        step7: document.getElementById('step-7')
+        step1: document.getElementById('step-1'),
+        step2: document.getElementById('step-2'),
+        step3: document.getElementById('step-3'), // New: Jornada Laboral
+        step4: document.getElementById('step-4'), // Was Step 3 (Demografía)
+        step5: document.getElementById('step-5'), // Was Step 4 (Tipos de Publico)
+        step6NewReferences: document.getElementById('step-6-new-references'), // Was Step 5
+        step7Estimation: document.getElementById('step-7-estimation')      // Was Step 6
     };
     const verticalNavSteps = document.querySelectorAll('.steps-nav li');
     const horizontalIndicators = {
-        indicator1: document.getElementById('horizontal-step-indicator-1'), indicator2: document.getElementById('horizontal-step-indicator-2'),
-        indicator3: document.getElementById('horizontal-step-indicator-3'), indicator4: document.getElementById('horizontal-step-indicator-4'),
-        indicator5: document.getElementById('horizontal-step-indicator-5'), indicator6: document.getElementById('horizontal-step-indicator-6'),
+        indicator1: document.getElementById('horizontal-step-indicator-1'),
+        indicator2: document.getElementById('horizontal-step-indicator-2'),
+        indicator3: document.getElementById('horizontal-step-indicator-3'), // New
+        indicator4: document.getElementById('horizontal-step-indicator-4'),
+        indicator5: document.getElementById('horizontal-step-indicator-5'),
+        indicator6: document.getElementById('horizontal-step-indicator-6'),
         indicator7: document.getElementById('horizontal-step-indicator-7')
     };
     const buttons = {
         next1: document.getElementById('next-step-1'),
         back2: document.getElementById('back-step-2'), next2: document.getElementById('next-step-2'),
-        back3: document.getElementById('back-step-3'), next3: document.getElementById('next-step-3'),
-        back4: document.getElementById('back-step-4'), next4: document.getElementById('next-step-4'), // New buttons for step 4
-        back5: document.getElementById('back-step-5'), next5: document.getElementById('next-step-5'),
-        back6: document.getElementById('back-step-6'), next6: document.getElementById('next-step-6'),
-        back7: document.getElementById('back-step-7'), restart: document.getElementById('restartButton')
+        back3: document.getElementById('back-step-3'), next3: document.getElementById('next-step-3'), // New
+        back4: document.getElementById('back-step-4'), next4: document.getElementById('next-step-4'), // Was back3/next3
+        back5: document.getElementById('back-step-5'), next5: document.getElementById('next-step-5'), // Was back4/next4
+        back6NewRef: document.getElementById('back-step-6-new-ref'), // Was back5NewRef
+        next6NewRef: document.getElementById('next-step-6-new-ref'), // Was next5NewRef
+        back7Est: document.getElementById('back-step-7-est'),         // Was back6Est
+        restart: document.getElementById('restartButtonNewLocation')
     };
     const inputs = {
         companySector: document.getElementById('companySector'),
@@ -461,51 +364,46 @@
         manualEmployeeToggle: document.getElementById('manualEmployeeToggle'),
         manualEmployeeInputDiv: document.getElementById('manualEmployeeInputDiv'),
         exactEmployees: document.getElementById('exactEmployees'),
+        daysWorkedPerMonth: document.getElementById('daysWorkedPerMonth'), // New
+        hoursWorkedPerDay: document.getElementById('hoursWorkedPerDay'),   // New
         manualDemographicsToggle: document.getElementById('manualDemographicsToggle'),
         manualDemographicsInputDiv: document.getElementById('manualDemographicsInputDiv'),
         manualMen: document.getElementById('manualMen'), manualWomen: document.getElementById('manualWomen'),
         manualBathroomsToggle: document.getElementById('manualBathroomsToggle'),
         manualBathroomsInputDiv: document.getElementById('manualBathroomsInputDiv'),
         manualBathrooms: document.getElementById('manualBathrooms'),
-        audienceAdministrative: document.getElementById('audienceAdministrative'), // New
-        audienceOperative: document.getElementById('audienceOperative'),       // New
-        audienceFloating: document.getElementById('audienceFloating'),         // New
-        percentBuscaPrecio: document.getElementById('percentBuscaPrecio'),
-        percentBuscaCalidad: document.getElementById('percentBuscaCalidad'),
-        percentBuscaConfort: document.getElementById('percentBuscaConfort'),
-        segmentPercentInputs: document.querySelectorAll('.segment-percent')
+        audienceAdministrative: document.getElementById('audienceAdministrative'),
+        audienceOperative: document.getElementById('audienceOperative'),
+        audienceFloating: document.getElementById('audienceFloating')
     };
     const displays = {
         estimatedMen: document.getElementById('estimatedMen'), estimatedWomen: document.getElementById('estimatedWomen'),
         estimatedBathrooms: document.getElementById('estimatedBathrooms'),
-        totalEmployeesForAudience: document.getElementById('totalEmployeesForAudience'), // New
+        totalEmployeesForAudience: document.getElementById('totalEmployeesForAudience'),
         resultToiletPaper: document.getElementById('result-toilet-paper'),
         resultHandTowels: document.getElementById('result-hand-towels'),
-        resultHandSoap: document.getElementById('result-hand-soap'),
-        percentTotal: document.getElementById('percentTotal'),
-        recommendedToiletPaper: document.getElementById('recommended-toilet-paper'),
-        recommendedHandTowel: document.getElementById('recommended-hand-towel'),
-        recommendedHandSoap: document.getElementById('recommended-hand-soap')
+        resultHandSoap: document.getElementById('result-hand-soap')
     };
     const errors = {
         sectorError: document.getElementById('sectorError'),
         employeeError: document.getElementById('employeeError'),
+        workHoursError: document.getElementById('workHoursError'), // New
         demographicsError: document.getElementById('demographicsError'),
         bathroomError: document.getElementById('bathroomError'),
-        audienceError: document.getElementById('audienceError'), // New
-        percentError: document.getElementById('percentError')
+        audienceError: document.getElementById('audienceError')
     };
 
     // --- Estado de la Aplicación ---
     let currentStep = 1;
     let companyData = {
         sector: null,
-        totalEmployees: null, men: null, women: null, bathrooms: null,
-        audienceAdministrative: null, audienceOperative: null, audienceFloating: null, // New
-        source: { employees: 'size', demographics: 'estimated', bathrooms: 'estimated' },
-        segmentMix: { buscaPrecio: 30, buscaCalidad: 50, buscaConfort: 20 },
-        calculationResults: { toiletPaper: 0, handTowels: 0, handSoap: 0 },
-        recommendedProducts: { papelHigienico: null, toallasManos: null, jabonManos: null }
+        totalEmployees: null,
+        daysWorkedPerMonth: 20, // Default for new step
+        hoursWorkedPerDay: 8,   // Default for new step
+        men: null, women: null, bathrooms: null,
+        audienceAdministrative: null, audienceOperative: null, audienceFloating: null,
+        source: { employees: 'size', demographics: 'estimated', bathrooms: 'estimated' }, // Add source for work hours if needed
+        calculationResults: { toiletPaper: 0, handTowels: 0, handSoap: 0 }
     };
 
     // --- Funciones de Utilidad (Calculadora) ---
@@ -528,14 +426,16 @@
                 else ind.classList.add('bg-gray-200', 'text-gray-600');
             }
         });
-        Object.values(steps).forEach((step, index) => {
+        Object.values(steps).forEach((stepContent, index) => {
             const isActive = index + 1 === currentStep;
-            step.classList.toggle('hidden', !isActive);
-            if (isActive) {
-                step.classList.remove('fade-leave-to', 'fade-leave-active', 'fade-enter-from');
-                step.classList.add('fade-enter-active');
-            } else {
-                step.classList.remove('fade-enter-active');
+            if (stepContent) {
+                stepContent.classList.toggle('hidden', !isActive);
+                if (isActive) {
+                    stepContent.classList.remove('fade-leave-to', 'fade-leave-active', 'fade-enter-from');
+                    stepContent.classList.add('fade-enter-active');
+                } else {
+                    stepContent.classList.remove('fade-enter-active');
+                }
             }
         });
          window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -553,7 +453,7 @@
         return { men: inferredMen, women: inferredWomen, bathrooms: inferredBathrooms };
     }
 
-    function updateStep3Display() {
+    function updateStep4_demographics_bathrooms_display() { // Was updateStep3Display
         const totalEmployees = companyData.totalEmployees;
         if (totalEmployees > 0) {
             const inferred = calculateInferredData(totalEmployees);
@@ -580,23 +480,23 @@
         }
     }
 
-    function updateStep4Display() { // For the new Audience Type step
+    function updateStep5_audience_display() { // Was updateStep4Display
         displays.totalEmployeesForAudience.textContent = companyData.totalEmployees > 0 ? companyData.totalEmployees : '--';
         inputs.audienceAdministrative.value = companyData.audienceAdministrative ?? '';
         inputs.audienceOperative.value = companyData.audienceOperative ?? '';
         inputs.audienceFloating.value = companyData.audienceFloating ?? '';
     }
 
-
     function calculateMonthlyUsage() {
         const men = companyData.men ?? 0;
         const women = companyData.women ?? 0;
-        console.log(companyData)
-        // Note: Audience type data (administrative, operative, floating) is not currently used in this calculation.
-        // The calculation remains based on men/women demographics from step 3.
-        const toiletPaperUsage = (women * RATES.women.toiletPaper + men * RATES.men.toiletPaper) * AVG_MONTHLY_WORK_HOURS;
-        const handTowelsUsage = (women * RATES.women.handTowels + men * RATES.men.handTowels) * AVG_MONTHLY_WORK_HOURS;
-        const handSoapUsage = (women * RATES.women.handSoap + men * RATES.men.handSoap) * AVG_MONTHLY_WORK_HOURS;
+        const daysWorked = companyData.daysWorkedPerMonth;
+        const hoursPerDay = companyData.hoursWorkedPerDay;
+        const totalMonthlyWorkHours = daysWorked * hoursPerDay;
+
+        const toiletPaperUsage = (women * RATES.women.toiletPaper + men * RATES.men.toiletPaper) * totalMonthlyWorkHours;
+        const handTowelsUsage = (women * RATES.women.handTowels + men * RATES.men.handTowels) * totalMonthlyWorkHours;
+        const handSoapUsage = (women * RATES.women.handSoap + men * RATES.men.handSoap) * totalMonthlyWorkHours;
         const results = {
             toiletPaper: Math.round(toiletPaperUsage),
             handTowels: Math.round(handTowelsUsage),
@@ -656,12 +556,27 @@
         return true;
     }
 
-    function validateStep3() {
+    function validateStep3_workHours() { // New validation function
+        hideAllErrors();
+        const days = parseInt(inputs.daysWorkedPerMonth.value, 10);
+        const hours = parseInt(inputs.hoursWorkedPerDay.value, 10);
+
+        if (isNaN(days) || days < 1 || days > 31 || isNaN(hours) || hours < 1 || hours > 24) {
+            errors.workHoursError.textContent = 'Ingresa un número válido de días (1-31) y horas (1-24).';
+            errors.workHoursError.classList.remove('hidden');
+            return false;
+        }
+        companyData.daysWorkedPerMonth = days;
+        companyData.hoursWorkedPerDay = hours;
+        return true;
+    }
+
+
+    function validateStep4_demographics_bathrooms() { // Was validateStep3
         hideAllErrors();
         let isValid = true;
         const totalEmployees = companyData.totalEmployees;
         if (!totalEmployees || totalEmployees <= 0) {
-            console.error("Error: Total employees not set before validating step 3.");
             return false;
         }
 
@@ -701,7 +616,7 @@
         return isValid;
     }
 
-    function validateStep4_audience() { // New validation for Audience Types (Step 4)
+    function validateStep5_audience() { // Was validateStep4_audience
         hideAllErrors();
         const admin = parseInt(inputs.audienceAdministrative.value, 10);
         const operative = parseInt(inputs.audienceOperative.value, 10);
@@ -713,10 +628,9 @@
             errors.audienceError.classList.remove('hidden');
             return false;
         }
-        // Los operativos no cuentan como empleados
-        const sumAudience = admin + operative;
-        if (sumAudience !== totalEmployees) {
-            errors.audienceError.textContent = `La suma de los tipos de público (${sumAudience}) debe ser igual al total de empleados (${totalEmployees}).`;
+        const sumAudienceForValidation = admin + operative;
+        if (sumAudienceForValidation !== totalEmployees) {
+            errors.audienceError.textContent = `La suma de Administrativos y Operativos (${sumAudienceForValidation}) debe ser igual al total de empleados (${totalEmployees}). Flotante es adicional.`;
             errors.audienceError.classList.remove('hidden');
             return false;
         }
@@ -726,171 +640,13 @@
         return true;
     }
 
-
-    function validateStep6_segments() { // Formerly validateStep5, now for Step 6 (Segment Mix)
-        hideAllErrors();
-        const buscaPrecio = parseInt(inputs.percentBuscaPrecio.value, 10) || 0;
-        const buscaCalidad = parseInt(inputs.percentBuscaCalidad.value, 10) || 0;
-        const buscaConfort = parseInt(inputs.percentBuscaConfort.value, 10) || 0;
-        const total = buscaPrecio + buscaCalidad + buscaConfort;
-
-        displays.percentTotal.textContent = `Total: ${total}%`;
-        if (total !== 100) {
-            errors.percentError.classList.remove('hidden');
-            buttons.next6.classList.add('btn-disabled');
-            buttons.next6.disabled = true;
-            return false;
-        } else {
-            errors.percentError.classList.add('hidden');
-            companyData.segmentMix.buscaPrecio = buscaPrecio;
-            companyData.segmentMix.buscaCalidad = buscaCalidad;
-            companyData.segmentMix.buscaConfort = buscaConfort;
-            buttons.next6.classList.remove('btn-disabled');
-            buttons.next6.disabled = false;
-            return true;
-        }
-    }
-
-    function selectTorkProducts() {
-        const mix = companyData.segmentMix;
-        const pPrecio = mix.buscaPrecio / 100;
-        const pCalidad = mix.buscaCalidad / 100;
-        // pConfort is 1 - pPrecio - pCalidad
-
-        const selected = { papelHigienico: null, toallasManos: null, jabonManos: null };
-
-        const selectProduct = (productTypeKey) => {
-            const random = Math.random();
-            let targetQuality;
-
-            if (random < pPrecio) targetQuality = qualityMapping.buscaPrecio;
-            else if (random < pPrecio + pCalidad) targetQuality = qualityMapping.buscaCalidad;
-            else targetQuality = qualityMapping.buscaConfort;
-
-            let availableProducts = torkProducts[productTypeKey].filter(p => p.calidad === targetQuality);
-
-            if (availableProducts.length === 0) {
-                if (targetQuality === qualityMapping.buscaConfort) {
-                    availableProducts = torkProducts[productTypeKey].filter(p => p.calidad === qualityMapping.buscaCalidad);
-                }
-                if (availableProducts.length === 0 && targetQuality !== qualityMapping.buscaPrecio) {
-                     availableProducts = torkProducts[productTypeKey].filter(p => p.calidad === qualityMapping.buscaPrecio);
-                }
-                if (availableProducts.length === 0) {
-                    availableProducts = torkProducts[productTypeKey];
-                }
-            }
-            if (availableProducts.length === 0) return null;
-            return availableProducts[Math.floor(Math.random() * availableProducts.length)];
-        };
-
-        selected.papelHigienico = selectProduct('papelHigienico');
-        selected.toallasManos = selectProduct('toallasManos');
-        selected.jabonManos = selectProduct('jabonManos');
-
-        companyData.recommendedProducts = selected;
-        return selected;
-    }
-
-    function displaySelectedProducts(selectedProducts) {
-        const formatCurrency = (value) => {
-            if (typeof value !== 'number' || isNaN(value)) return 'N/A';
-            return value.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
-        };
-
-        const calculateQuantity = (productTypeKey, product, monthlyUsage) => {
-            if (!product || monthlyUsage <= 0) return 1;
-            let usesPerPaca = 1000;
-
-            try {
-                if (productTypeKey === 'papelHigienico') {
-                    if (product.metros && product.rollosXPaca) {
-                        const rollos = parseInt(String(product.rollosXPaca).match(/\d+/)?.[0] || '1');
-                        usesPerPaca = product.metros * rollos * 0.8;
-                    } else if (product.hojas && product.rollosXPaca) {
-                        const rollos = parseInt(String(product.rollosXPaca).match(/\d+/)?.[0] || '1');
-                        usesPerPaca = product.hojas * rollos * 0.5;
-                    }
-                } else if (productTypeKey === 'toallasManos') {
-                     if (product.metros && product.rollosXPaca) {
-                        const rollos = parseInt(String(product.rollosXPaca).match(/\d+/)?.[0] || '1');
-                        usesPerPaca = product.metros * rollos * 2;
-                    } else if (product.hojas && product.paca) {
-                         usesPerPaca = product.hojas * 1;
-                    }
-                } else if (productTypeKey === 'jabonManos') {
-                    if (product.volumen && product.paca) {
-                        const volumeMl = parseFloat(String(product.volumen).replace(/[^0-9.]/g, '')) || 0;
-                        const unitsPerPaca = product.paca || 1;
-                        const mlPerUse = product.descripcion.toLowerCase().includes('espuma') ? 0.4 : 1.5;
-                        if (volumeMl > 0 && mlPerUse > 0) {
-                            usesPerPaca = (volumeMl / mlPerUse) * unitsPerPaca;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.error("Error calculating usesPerPaca:", e, product);
-            }
-
-            if (usesPerPaca <= 0) usesPerPaca = 1;
-            const quantity = Math.ceil(monthlyUsage / usesPerPaca);
-            return quantity > 0 ? quantity : 1;
-        };
-
-        const renderProduct = (product, productTypeKey, monthlyUsage) => {
-            if (!product) {
-                return `<p class="italic text-center text-red-500 p-4 bg-red-50 rounded border border-dashed border-red-300">No se pudo seleccionar un producto adecuado. Intente ajustar la mezcla de segmentos o contacte a un asesor.</p>`;
-            }
-            const placeholderImg = 'https://placehold.co/200x200/e0e7ff/3730a3?text=Producto';
-            const imageUrl = product.imagenURL || placeholderImg;
-            const price = typeof product.precioUnitario === 'number' ? product.precioUnitario : 0;
-            const quantityPacas = calculateQuantity(productTypeKey, product, monthlyUsage);
-            const outlay = quantityPacas * price;
-
-            let productHtml = `<div class="recommendation-layout">`;
-            productHtml += `<div class="image-column">
-                                <img src="${imageUrl}" alt="${product.descripcion || 'Producto Tork'}" class="product-image" onerror="this.onerror=null;this.src='${placeholderImg}';">
-                            </div>`;
-            productHtml += `<div class="text-column">`;
-            productHtml += `<h4 class="product-title">${product.descripcion}</h4>`;
-            productHtml += `<div class="details-grid">`;
-            productHtml += `<p><span>Código:</span> <span class="font-medium">${product.codigo || 'N/A'}</span></p>`;
-            if (product.metros) productHtml += `<p><span>Metros/Rollo:</span> <span class="font-medium">${product.metros}</span></p>`;
-            if (product.volumen) productHtml += `<p><span>Volumen/Unidad:</span> <span class="font-medium">${product.volumen}</span></p>`;
-            if (product.hojas) productHtml += `<p><span>Hojas/Rollo:</span> <span class="font-medium">${product.hojas}</span></p>`;
-            if (product.color) productHtml += `<p><span>Color:</span> <span class="font-medium">${product.color}</span></p>`;
-            if (product.tipo) productHtml += `<p><span>Tipo Jabón:</span> <span class="font-medium">${product.tipo}</span></p>`;
-            productHtml += `<p><span>Calidad Tork:</span> <span class="font-semibold">${product.calidad || 'N/A'}</span></p>`;
-            if (product.papel) productHtml += `<p><span>Tipo Papel:</span> <span class="font-medium">${product.papel}</span></p>`;
-            if (product.rollosXPaca) productHtml += `<p><span>Unidades/Paca:</span> <span class="font-medium">${product.rollosXPaca}</span></p>`;
-            else if (product.paca) productHtml += `<p><span>Unidades/Paca:</span> <span class="font-medium">${product.paca}</span></p>`;
-            if (product.dispensador) productHtml += `<p><span>Dispensador:</span> <span class="font-medium">${product.dispensador}</span></p>`;
-            productHtml += `</div>`;
-            productHtml += `<div class="calculated-values">`;
-            productHtml += `<p><span class="font-medium text-gray-700">Cantidad Estimada (Pacas/Mes):</span> <span class="value">${quantityPacas.toLocaleString('es-CO')}</span> <span class="usage-context">(para ${monthlyUsage.toLocaleString('es-CO')} usos/mes)</span></p>`;
-            productHtml += `<p><span class="font-medium text-gray-700">Precio Unitario (Paca):</span> <span class="price-value">${formatCurrency(price)}</span></p>`;
-            productHtml += `<p><span class="font-medium text-gray-700">Desembolso Mensual Estimado:</span> <span class="outlay-value">${formatCurrency(outlay)}</span></p>`;
-            productHtml += `</div>`;
-            productHtml += `</div>`;
-            productHtml += `</div>`;
-            return productHtml;
-        };
-
-        displays.recommendedToiletPaper.innerHTML = renderProduct(selectedProducts.papelHigienico, 'papelHigienico', companyData.calculationResults.toiletPaper);
-        displays.recommendedHandTowel.innerHTML = renderProduct(selectedProducts.toallasManos, 'toallasManos', companyData.calculationResults.handTowels);
-        displays.recommendedHandSoap.innerHTML = renderProduct(selectedProducts.jabonManos, 'jabonManos', companyData.calculationResults.handSoap);
-    }
-
-
     // --- Event Listeners (Calculadora) ---
-    // Step 1: Sector
     buttons.next1.addEventListener('click', () => {
         if (validateStep1()) {
             currentStep = 2; updateStepIndicator();
         }
     });
 
-    // Step 2: Tamaño Empresa
     inputs.manualEmployeeToggle.addEventListener('change', (e) => {
         const isChecked = e.target.checked;
         inputs.manualEmployeeInputDiv.classList.toggle('hidden', !isChecked);
@@ -914,19 +670,30 @@
     buttons.back2.addEventListener('click', () => { currentStep = 1; updateStepIndicator(); hideAllErrors(); });
     buttons.next2.addEventListener('click', () => {
         if (validateStep2()) {
-            updateStep3Display();
+            // Pre-fill Step 3 (Jornada Laboral) defaults if needed, though they are set by 'value' attribute
+            inputs.daysWorkedPerMonth.value = companyData.daysWorkedPerMonth;
+            inputs.hoursWorkedPerDay.value = companyData.hoursWorkedPerDay;
             currentStep = 3; updateStepIndicator();
         }
     });
 
-    // Step 3: Demografía y Baños
+    // Step 3: Jornada Laboral (New)
+    buttons.back3.addEventListener('click', () => { currentStep = 2; updateStepIndicator(); hideAllErrors(); });
+    buttons.next3.addEventListener('click', () => {
+        if (validateStep3_workHours()) {
+            updateStep4_demographics_bathrooms_display(); // Prepare display for the next step
+            currentStep = 4; updateStepIndicator();
+        }
+    });
+
+    // Step 4: Demografía y Baños (Was Step 3)
     inputs.manualDemographicsToggle.addEventListener('change', (e) => {
         const isChecked = e.target.checked;
         inputs.manualDemographicsInputDiv.classList.toggle('hidden', !isChecked);
         companyData.source.demographics = isChecked ? 'manual' : 'estimated';
         hideAllErrors();
         if(isChecked) { inputs.manualMen.value = ''; inputs.manualWomen.value = ''; inputs.manualMen.focus(); }
-        updateStep3Display();
+        updateStep4_demographics_bathrooms_display();
     });
     inputs.manualBathroomsToggle.addEventListener('change', (e) => {
         const isChecked = e.target.checked;
@@ -934,61 +701,46 @@
         companyData.source.bathrooms = isChecked ? 'manual' : 'estimated';
         hideAllErrors();
         if(isChecked) { inputs.manualBathrooms.value = ''; inputs.manualBathrooms.focus(); }
-        updateStep3Display();
+         updateStep4_demographics_bathrooms_display();
     });
-    buttons.back3.addEventListener('click', () => { currentStep = 2; updateStepIndicator(); hideAllErrors(); });
-    buttons.next3.addEventListener('click', () => {
-        if (validateStep3()) {
-            updateStep4Display(); // Prepare display for the new step 4
-            currentStep = 4; updateStepIndicator();
-        }
-    });
-
-    // Step 4: Tipos de Publico (New)
     buttons.back4.addEventListener('click', () => { currentStep = 3; updateStepIndicator(); hideAllErrors(); });
     buttons.next4.addEventListener('click', () => {
-        if (validateStep4_audience()) {
-            const results = calculateMonthlyUsage(); // Calculate consumption based on step 3 demographics
-            updateResultsDisplay(results);         // Populate step 5 display
+        if (validateStep4_demographics_bathrooms()) {
+            updateStep5_audience_display(); // Prepare display for next step
             currentStep = 5; updateStepIndicator();
+            inputs.audienceAdministrative.value= companyData.totalEmployees * 0.2
+            inputs.audienceOperative.value = companyData.totalEmployees * 0.8
+            inputs.audienceFloating.value = 0
         }
     });
 
-
-    // Step 5: Estimación Consumo (Formerly Step 4)
-    buttons.back5.addEventListener('click', () => { currentStep = 4; updateStepIndicator(); });
-    buttons.next5.addEventListener('click', () => {
-        inputs.percentBuscaPrecio.value = companyData.segmentMix.buscaPrecio;
-        inputs.percentBuscaCalidad.value = companyData.segmentMix.buscaCalidad;
-        inputs.percentBuscaConfort.value = companyData.segmentMix.buscaConfort;
-        validateStep6_segments();
-        currentStep = 6; updateStepIndicator();
-    });
-
-    // Step 6: Mezcla Segmentos (Formerly Step 5)
-    buttons.back6.addEventListener('click', () => { currentStep = 5; updateStepIndicator(); hideAllErrors(); });
-    inputs.segmentPercentInputs.forEach(input => { input.addEventListener('input', validateStep6_segments); });
-    buttons.next6.addEventListener('click', () => {
-        if (validateStep6_segments()) {
-            displays.recommendedToiletPaper.innerHTML = '<p class="italic">Calculando...</p>';
-            displays.recommendedHandTowel.innerHTML = '<p class="italic">Calculando...</p>';
-            displays.recommendedHandSoap.innerHTML = '<p class="italic">Calculando...</p>';
-            currentStep = 7; updateStepIndicator();
-            setTimeout(() => {
-                const selectedProducts = selectTorkProducts();
-                displaySelectedProducts(selectedProducts);
-            }, 50);
+    // Step 5: Tipos de Publico (Was Step 4)
+    buttons.back5.addEventListener('click', () => { currentStep = 4; updateStepIndicator(); hideAllErrors(); });
+    buttons.next5.addEventListener('click', () => { // "Calcular Consumo" button
+        if (validateStep5_audience()) {
+            calculateMonthlyUsage(); // Calculate based on internal rates and new work hours
+            currentStep = 6; // Proceed to Seleccion de referencias
+            updateStepIndicator();
         }
     });
 
-    // Step 7: Recomendación (Formerly Step 6)
-    buttons.back7.addEventListener('click', () => { currentStep = 6; updateStepIndicator(); });
+    // Step 6: Seleccion de Referencias (Was Step 5)
+    buttons.back6NewRef.addEventListener('click', () => { currentStep = 5; updateStepIndicator(); hideAllErrors(); });
+    buttons.next6NewRef.addEventListener('click', () => { // "Ver Estimación" button
+        calcularconsumo(companyData); // This will use API and also companyData.daysWorkedPerMonth, companyData.hoursWorkedPerDay
+        currentStep = 7; // Proceed to Estimación Consumo
+        updateStepIndicator();
+    });
+
+    // Step 7: Estimación Consumo (Was Step 6)
+    buttons.back7Est.addEventListener('click', () => { currentStep = 6; updateStepIndicator(); hideAllErrors(); });
     buttons.restart.addEventListener('click', () => { location.reload(); });
+
 
     // --- Inicialización ---
     document.addEventListener('DOMContentLoaded', () => {
         updateStepIndicator();
-        validateStep6_segments(); // Initialize segment mix validation for what is now step 6
+        fillSelectsFromApiRefs(); // Call this here as well
 
         const statContainer = document.getElementById('changing-stat-container');
         const messages = [
@@ -1023,6 +775,144 @@
             }, false);
         }
     });
+
+
+async function fillSelectsFromApiRefs() {
+  try {
+    const response = await fetch('/api_refs');
+    if (!response.ok) {
+      throw new Error(`Error en la petición: ${response.status} ${response.statusText}`);
+    }
+    const data = await response.json();
+
+    const phrefsSelect = document.getElementById('phrefs');
+    if (phrefsSelect) {
+
+      data.tplist.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = item.name;
+        phrefsSelect.appendChild(option);
+      });
+    }
+
+    const htrefsSelect = document.getElementById('htrefs');
+    if (htrefsSelect) {
+
+      data.htlist.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = item.name;
+        htrefsSelect.appendChild(option);
+      });
+    }
+
+    const srefsSelect = document.getElementById('srefs');
+    if (srefsSelect) {
+
+      data.slist.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = item.name;
+        srefsSelect.appendChild(option);
+      });
+    }
+  } catch (error) {
+    console.error("Hubo un problema al llenar los selects:", error);
+  }
+}
+
+ const phrefsSelect = document.getElementById('phrefs');
+ const htrefsSelect = document.getElementById('htrefs');
+ const srefsSelect = document.getElementById('srefs');
+
+const calcularconsumo = async (companyData) => {
+    const administrative = companyData.audienceAdministrative
+    const operative = companyData.audienceOperative
+    const floating = companyData.audienceFloating
+    const menprop = companyData.totalEmployees > 0 ? companyData.men / companyData.totalEmployees : 0;
+    const womenprop = companyData.totalEmployees > 0 ? companyData.women / companyData.totalEmployees : 0;
+    let adcons, opcons, flcons;
+
+    const baseFormData = {
+        apikey: "asdklfLCJKVLvnclklskhdW09232dkja92235adj",
+        sector: companyData.sector,
+        diasLaborales: companyData.daysWorkedPerMonth, // Using new input
+        horasLaborales: companyData.hoursWorkedPerDay, // Using new input
+        tpref: phrefsSelect.value,
+        htref: htrefsSelect.value,
+        srref: "na",
+        sref:  srefsSelect.value,
+        lmref: "na",
+    };
+
+    const formDataAdminstrative = {
+        ...baseFormData,
+        numMujeres: womenprop * administrative,
+        numHombres: menprop * administrative,
+        tipoPublico: "Administrativo",
+    };
+
+    const formDataoperative = {
+        ...baseFormData,
+        numMujeres: womenprop * operative,
+        numHombres: menprop * operative,
+        tipoPublico: "Operativo",
+    };
+
+    const formDatafloating = {
+        ...baseFormData,
+        numMujeres: womenprop * floating, // Assuming floating population has similar gender distribution or this needs adjustment
+        numHombres: menprop * floating,
+        tipoPublico: "Flotante",
+    };
+
+  const finalcons = { consumoph: 0, consumojabon: 0, consumotoallas:0 };
+
+  try {
+    if (administrative > 0) {
+        adcons = await fetch('/api_ce', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formDataAdminstrative)
+        });
+        if (adcons.ok) { const adconsres = await adcons.json(); finalcons.consumoph += adconsres.consumoph; finalcons.consumojabon += adconsres.consumojabon; finalcons.consumotoallas += adconsres.consumotoallas;}
+        else { console.error("Error API Admin:", await adcons.text());}
+    }
+
+    if (operative > 0) {
+        opcons = await fetch('/api_ce', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formDataoperative)
+        });
+        if (opcons.ok) { const opconsres = await opcons.json(); finalcons.consumoph += opconsres.consumoph; finalcons.consumojabon += opconsres.consumojabon; finalcons.consumotoallas += opconsres.consumotoallas;}
+        else { console.error("Error API Operative:", await opcons.text());}
+    }
+
+    if (floating > 0) {
+        flcons = await fetch('/api_ce', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formDatafloating)
+        });
+        if (flcons.ok) { const flconsres = await flcons.json(); finalcons.consumoph += flconsres.consumoph; finalcons.consumojabon += flconsres.consumojabon; finalcons.consumotoallas += flconsres.consumotoallas;}
+        else { console.error("Error API Floating:", await flcons.text());}
+    }
+  } catch (error) {
+      console.error("Error during API calls in calcularconsumo:", error);
+  }
+
+    companyData.calculationResults.toiletPaper = parseFloat(finalcons.consumoph.toFixed(2));
+    companyData.calculationResults.handTowels = parseFloat(finalcons.consumotoallas.toFixed(2));
+    // Assuming 'consumojabon' from API corresponds to 'handSoap' for display purposes
+    // If 'servilletas' (napkins) should be 'resultHandSoap', this might be a mismatch.
+    // For now, mapping 'consumojabon' to 'handSoap' display.
+    companyData.calculationResults.handSoap = parseFloat(finalcons.consumojabon.toFixed(2));
+
+
+    updateResultsDisplay(companyData.calculationResults);
+}
     </script>
     </body>
 </html>
