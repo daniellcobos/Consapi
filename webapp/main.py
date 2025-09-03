@@ -270,9 +270,8 @@ def api_consultor_integral():
 
                     # Si el consumo es 0 o muy bajo, generar un número aleatorio entre 10-100
                 if consumo_total < 1:
-                    consumo_total += random.randint(10, 100)
-                    precio_total += random.randint(10, 100)
-                
+                    consumo_total += 1
+                    precio_total += 1
                 resultados[producto] = {
                     'consumo_mensual': round(consumo_total, 2) if isinstance(consumo_total, float) else consumo_total,
                     'precio_consumo': round(precio_total, 2) if precio_total else 0,
@@ -396,8 +395,8 @@ def recalcular_consumo():
 
             # Si el consumo es 0 o muy bajo, generar un número aleatorio entre 10-100
         if consumo_total < 1:
-                consumo_total += random.randint(10, 100)
-                precio_total += random.randint(10, 100)
+                consumo_total += 1
+                precio_total += 1
 
         
         return {
