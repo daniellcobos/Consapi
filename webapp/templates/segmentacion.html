@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selección de Solución de Aseo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #004d40;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        p.intro {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .question-box {
+            background-color: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .question-box p {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #004d40;
+            margin: 0;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-button {
+            background-color: #00796b;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-button:hover {
+            background-color: #004d40;
+            transform: translateY(-2px);
+        }
+
+        .recommendation {
+            background-color: #bbdefb;
+            border-left: 5px solid #2196f3;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .recommendation h2 {
+            font-size: 1.8em;
+            color: #0d47a1;
+            margin-top: 0;
+        }
+
+        .recommendation p {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0d47a1;
+            margin: 10px 0;
+        }
+
+        .recommendation-details {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+        
+        .recommendation-group {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .recommendation-group h3 {
+            font-size: 1.2em;
+            margin-top: 0;
+            color: #0d47a1;
+        }
+
+        .recommendation-group ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .recommendation-group li {
+            background-color: #bbdefb;
+            border: 1px solid #90caf9;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+
+        .restart-button {
+            margin-top: 25px;
+            padding: 12px 25px;
+            font-size: 1em;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .restart-button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Selección de Solución de Aseo</h1>
+        <p class="intro">
+            Responde a las siguientes preguntas para encontrar la solución de higiene de baño más adecuada para las necesidades de tu establecimiento.
+        </p>
+        
+        <div id="quiz-container">
+            </div>
+    </div>
+
+    <script>
+        const data = {
+            "Papel Higiénico": {
+                "Higiene Crítica": {
+                    "Tráfico Bajo": { "posicionamiento": "Tork SmartOne® Mini", "referencias": ["204 028", "716 11"], "dispensador": ["837 01"] },
+                    "Tráfico Medio": { "posicionamiento": "Jumbos Línea Legacy", "referencias": ["716 10", "716 13"], "dispensador": ["837 010"] },
+                    "Tráfico Alto": { "posicionamiento": "Jumbos Línea Legacy", "referencias": ["716 10", "716 13"], "dispensador": ["837 010"] },
+                    "Tráfico Pico": { "posicionamiento": "Tork SmartOne® Maxi", "referencias": ["202 581", "711 87"], "dispensador": ["836 00"] }
+                },
+                "Wow Factor": {
+                    "Tráfico Bajo": { "posicionamiento": "Tork SmartOne® Mini", "referencias": ["204 028", "716 11"], "dispensador": ["837 01"] },
+                    "Tráfico Medio": { "posicionamiento": "Jumbos Línea Legacy", "referencias": ["716 10", "716 13"], "dispensador": ["837 010"] },
+                    "Tráfico Alto": [
+                        { "posicionamiento": "Jumbos Línea Legacy", "referencias": ["716 10", "716 13"], "dispensador": ["837 010"] },
+                        { "posicionamiento": "Jumbos Línea Image", "referencias": ["202 581", "711 87"], "dispensador": ["836 00"] }
+                    ],
+                    "Tráfico Pico": { "posicionamiento": "Tork SmartOne® Maxi", "referencias": ["202 581", "711 87"], "dispensador": ["836 00"] }
+                },
+                "Restroom Plus": {
+                    "Tráfico Bajo": { "posicionamiento": "Tork SmartOne® Mini", "referencias": ["204 028", "716 11"], "dispensador": ["837 01"] },
+                    "Tráfico Medio": [
+                        { "posicionamiento": "Jumbos Línea Image", "referencias": ["716 10", "716 13"], "dispensador": ["837 010"] },
+                        { "posicionamiento": "Jumbos Línea Image", "referencias": ["202 580", "714 57", "711 07", "711 17", "713 57", "715 57"], "dispensador": ["201 588"] }
+                    ],
+                    "Tráfico Alto": [
+                        { "posicionamiento": "Jumbos Línea Image", "referencias": ["716 10", "716 13"], "dispensador": ["837 010"] },
+                        { "posicionamiento": "Jumbos Línea Image", "referencias": ["202 580", "714 57", "711 07", "711 17", "713 57", "715 57"], "dispensador": ["201 588"] }
+                    ],
+                    "Tráfico Pico": { "posicionamiento": "Tork SmartOne® Maxi", "referencias": ["202 581", "711 87"], "dispensador": ["836 00"] }
+                },
+                "Essential": {
+                    "Tráfico Bajo": { "posicionamiento": "Convencionales", "referencias": ["202 019", "201 763", "201 764", "201 647"], "dispensador": ["ND"] },
+                    "Tráfico Medio": { "posicionamiento": "Jumbos Línea Image", "referencias": ["202 580", "714 57", "711 07", "711 17", "713 57", "715 57"], "dispensador": ["201 588"] },
+                    "Tráfico Alto": { "posicionamiento": "Jumbos Línea Image", "referencias": ["202 580", "714 57", "711 07", "711 17", "713 57", "715 57"], "dispensador": ["201 588"] }
+                }
+            },
+            "Toallas de Manos": {
+                "Higiene Crítica": {
+                    "Tráfico Bajo": { "posicionamiento": "Tork Xpress®", "referencias": ["735 28", "735 54", "200 246", "735 38"], "dispensador": ["830 96", "830 51", "830 50", "836 10"] },
+                    "Tráfico Medio": { "posicionamiento": "Tork Flujo Central", "referencias": ["735 75", "736 89", "831 60", "736 69", "737 48"], "dispensador": ["831 60"] },
+                    "Tráfico Alto": { "posicionamiento": "Tork PeakServe®", "referencias": ["736 57", "203 542", "737 08", "839 62", "203 543"], "dispensador": ["839 62", "203 543"] },
+                    "Tráfico Pico": { "posicionamiento": "Tork PeakServe®", "referencias": ["736 57", "203 542", "737 08", "839 62", "203 543"], "dispensador": ["839 62", "203 543"] }
+                },
+                "Wow Factor": {
+                    "Tráfico Bajo": { "posicionamiento": "Tork Xpress®", "referencias": ["735 28", "735 54", "200 246", "735 38"], "dispensador": ["830 96", "830 51", "830 50", "836 10"] },
+                    "Tráfico Medio": { "posicionamiento": "Tork Flujo Central", "referencias": ["735 75", "736 89", "831 60", "736 69", "737 48"], "dispensador": ["831 60"] },
+                    "Tráfico Alto": { "posicionamiento": "Tork PeakServe®", "referencias": ["736 57", "203 542", "737 08", "839 62", "203 543"], "dispensador": ["839 62", "203 543"] },
+                    "Tráfico Pico": { "posicionamiento": "Tork PeakServe®", "referencias": ["736 57", "203 542", "737 08", "839 62", "203 543"], "dispensador": ["839 62", "203 543"] }
+                },
+                "Restroom Plus": {
+                    "Tráfico Bajo": { "posicionamiento": "Tork Xpress®", "referencias": ["735 28", "735 54", "200 246", "735 38"], "dispensador": ["830 96", "830 51", "830 50", "836 10"] },
+                    "Tráfico Medio": { "posicionamiento": "Tork Flujo Central", "referencias": ["735 75", "736 89", "831 60", "736 69", "737 48"], "dispensador": ["831 60"] },
+                    "Tráfico Alto": { "posicionamiento": "Tork PeakServe®", "referencias": ["736 57", "203 542", "737 08", "839 62", "203 543"], "dispensador": ["839 62", "203 543"] },
+                    "Tráfico Pico": { "posicionamiento": "Tork PeakServe®", "referencias": ["736 57", "203 542", "737 08", "839 62", "203 543"], "dispensador": ["839 62", "203 543"] }
+                },
+                "Essential": {
+                    "Tráfico Bajo": { "posicionamiento": "Tork Xpress®", "referencias": ["735 28", "735 54", "200 246", "735 38"], "dispensador": ["830 96", "830 51", "830 50", "836 10"] },
+                    "Tráfico Medio": { "posicionamiento": "Tork Flujo Central", "referencias": ["735 75", "736 89", "831 60", "736 69", "737 48"], "dispensador": ["831 60"] },
+                    "Tráfico Alto": { "posicionamiento": "Tork PeakServe®", "referencias": ["736 57", "203 542", "737 08", "839 62", "203 543"], "dispensador": ["839 62", "203 543"] },
+                    "Tráfico Pico": { "posicionamiento": "Tork PeakServe®", "referencias": ["736 57", "203 542", "737 08", "839 62", "203 543"], "dispensador": ["839 62", "203 543"] }
+                }
+            },
+            "Jabones y Gel": {
+                "Higiene Crítica": {
+                    "Tráfico Bajo": { "posicionamiento": "NA", "referencias": ["203 230", "203 169"], "dispensador": ["203 166"] },
+                    "Tráfico Medio": { "posicionamiento": "NA", "referencias": ["80506", "80107", "805 41"], "dispensador": ["835 30", "835 10"] },
+                    "Tráfico Alto": { "posicionamiento": "NA", "referencias": ["80506", "80107", "805 41"], "dispensador": ["835 30", "835 10"] },
+                    "Tráfico Pico": { "posicionamiento": "NA", "referencias": ["80506", "80107", "805 41"], "dispensador": ["835 30", "835 10"] }
+                },
+                "Wow Factor": {
+                    "Tráfico Bajo": { "posicionamiento": "NA", "referencias": ["203 230", "203 169"], "dispensador": ["203 166"] },
+                    "Tráfico Medio": { "posicionamiento": "NA", "referencias": ["805 30"], "dispensador": ["836 20"] },
+                    "Tráfico Alto": { "posicionamiento": "NA", "referencias": ["805 30"], "dispensador": ["836 20"] },
+                    "Tráfico Pico": { "posicionamiento": "NA", "referencias": ["805 30"], "dispensador": ["836 20"] }
+                },
+                "Restroom Plus": {
+                    "Tráfico Bajo": { "posicionamiento": "NA", "referencias": ["203 230", "203 169"], "dispensador": ["203 166"] },
+                    "Tráfico Medio": { "posicionamiento": "NA", "referencias": ["80506", "805 30"], "dispensador": ["835 30", "835 10"] },
+                    "Tráfico Alto": { "posicionamiento": "NA", "referencias": ["80506", "805 30"], "dispensador": ["835 30", "835 10"] },
+                    "Tráfico Pico": { "posicionamiento": "NA", "referencias": ["80506", "805 30"], "dispensador": ["835 30", "835 10"] }
+                },
+                "Essential": {
+                    "Tráfico Bajo": { "posicionamiento": "NA", "referencias": ["203 230", "203 169"], "dispensador": ["203 166"] },
+                    "Tráfico Medio": { "posicionamiento": "NA", "referencias": ["80506", "805 30"], "dispensador": ["835 30", "835 10"] },
+                    "Tráfico Alto": { "posicionamiento": "NA", "referencias": ["80506", "805 30"], "dispensador": ["835 30", "835 10"] },
+                    "Tráfico Pico": { "posicionamiento": "NA", "referencias": ["80506", "805 30"], "dispensador": ["835 30", "835 10"] }
+                }
+            }
+        };
+
+        const quizContainer = document.getElementById('quiz-container');
+
+        const questions = {
+            "q_producto": {
+                "question": "¿Qué tipo de producto de aseo necesitas?",
+                "options": Object.keys(data).map(key => ({ "text": key, "next": `q_segmento`, "productType": key }))
+            }
+        };
+
+        let currentSelection = {};
+
+        function renderQuestion(questionId, productType = null, segment = null) {
+            let currentQuestion;
+            let optionsData;
+
+            if (questionId === 'q_segmento') {
+                currentSelection.productType = productType;
+                optionsData = Object.keys(data[productType]).map(key => ({ "text": key, "next": `q_trafico`, "segment": key }));
+                currentQuestion = { "question": `Selecciona el segmento de baño para ${productType}:`, "options": optionsData };
+            } else if (questionId === 'q_trafico') {
+                currentSelection.segment = segment;
+                optionsData = Object.keys(data[currentSelection.productType][segment]).map(key => ({ "text": key, "next": `rec_final`, "traffic": key }));
+                currentQuestion = { "question": `¿Cuál es el volumen de tráfico diario para este segmento?`, "options": optionsData };
+            } else {
+                currentQuestion = questions[questionId];
+            }
+
+            quizContainer.innerHTML = `
+                <div class="question-box">
+                    <p>${currentQuestion.question}</p>
+                </div>
+                <div class="options-container">
+                    ${currentQuestion.options.map(option => {
+                        const nextParams = `${option.next}', '${option.productType || ''}', '${option.segment || ''}', '${option.traffic || ''}`;
+                        return `<button class="option-button" onclick="handleAnswer('${nextParams}')">${option.text}</button>`;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function renderRecommendation(recommendation) {
+            let detailsHTML = '';
+            
+            const renderGroup = (rec) => `
+                <div class="recommendation-group">
+                    <h3>Posicionamiento: ${rec.posicionamiento}</h3>
+                    <h4>Referencias:</h4>
+                    <ul>
+                        ${rec.referencias.map(ref => `<li>${ref}</li>`).join('')}
+                    </ul>
+                    <h4>Dispensador:</h4>
+                    <ul>
+                        ${rec.dispensador.map(disp => `<li>${disp}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            if (Array.isArray(recommendation)) {
+                recommendation.forEach(rec => {
+                    detailsHTML += renderGroup(rec);
+                });
+            } else {
+                detailsHTML = renderGroup(recommendation);
+            }
+
+            quizContainer.innerHTML = `
+                <div class="recommendation">
+                    <h2>¡Solución Encontrada!</h2>
+                    <div class="recommendation-details">
+                        ${detailsHTML}
+                    </div>
+                </div>
+                <button class="restart-button" onclick="startQuiz()">Comenzar de Nuevo</button>
+            `;
+        }
+
+        function handleAnswer(nextId, productType, segment, traffic) {
+            if (nextId === 'rec_final') {
+                currentSelection.traffic = traffic;
+                const rec = data[currentSelection.productType][currentSelection.segment][currentSelection.traffic];
+                renderRecommendation(rec);
+            } else {
+                renderQuestion(nextId, productType, segment);
+            }
+        }
+
+        function startQuiz() {
+            currentSelection = {};
+            renderQuestion("q_producto");
+        }
+
+        startQuiz();
+    </script>
+
+</body>
+</html>

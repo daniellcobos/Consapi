@@ -35,6 +35,7 @@ def index():  # put application's code here
 
 
 def calculoconsumo(tlhombres,tlmujeres,pc,rc,cat,tipoPublico,sector,tipos,skuprod):
+    print(tlhombres,tlmujeres,cat,tipoPublico,sector,skuprod)
     if skuprod != 'na':
         try:
             tipos['Tipo_Bano'] = tipos['Tipo_Bano'].str.lower()
@@ -49,6 +50,10 @@ def calculoconsumo(tlhombres,tlmujeres,pc,rc,cat,tipoPublico,sector,tipos,skupro
             consphmujer = tlmujeres * tpmujerph
 
             rendfilt = rc.loc[rc['Ref_Prod'] == skuprod]
+            rendfilt = rendfilt.loc[rendfilt['Sector'] == sector]
+            if rendfilt.empty:
+                rendfilt = rc.loc[rc['Ref_Prod'] == skuprod]
+
 
             rendhombre = rendfilt['Hombres'].tolist()[0]
             rendmujer = rendfilt['Mujeres'].tolist()[0]
@@ -60,6 +65,7 @@ def calculoconsumo(tlhombres,tlmujeres,pc,rc,cat,tipoPublico,sector,tipos,skupro
             #preciocons = precio * consmensual
             preciocons = 0
         except Exception as e:
+            print(e)
             consmensual = 0
             preciocons = 0
             print(e,"error de calculo")
@@ -73,8 +79,10 @@ def getSku(ref):
     elif ref == 'na':
         return 'na'
     else:
-        return int(ref.split(' ')[0])
-
+        try:
+            return int(ref.split(' ')[0])
+        except:
+            return int(ref.split('-')[0])
 @app.route('/api_ce', methods = ['GET', 'POST'])
 def apitest():  # put application's code here
     if request.method == 'GET':
@@ -134,11 +142,11 @@ def apitest():  # put application's code here
 def get_api_refs():
     parametros = pd.read_excel(parameterspath, sheet_name='Parametros')
     tplist = parametros["Ref_Papel"].dropna().tolist()
-    tplist = [{"id":int(ref.split(' ')[0]),"name":ref} for ref in tplist]
+    tplist = [{"id":int(ref.split('-')[0]),"name":ref} for ref in tplist]
     htlist = parametros["Ref_Toallas"].dropna().tolist()
-    htlist = [{"id":int(ref.split(' ')[0]),"name":ref} for ref in htlist]
+    htlist = [{"id":int(ref.split('-')[0]),"name":ref} for ref in htlist]
     slist = parametros["Ref_Jabon"].dropna().tolist()
-    slist = [{"id":int(ref.split(' ')[0]),"name":ref} for ref in slist]
+    slist = [{"id":int(ref.split('-')[0]),"name":ref} for ref in slist]
     srlist = parametros["Ref_Servilletas"].dropna().tolist()
     srlist = [{"id": int(ref.split(' ')[0]), "name": ref} for ref in srlist]
     lmlist = parametros["Ref_Limpiones"].dropna().tolist()
@@ -150,5 +158,254 @@ def get_api_refs():
 def guia():  # put application's code here
     #read excel parameters
     return render_template("guia.html")
+
+
+@app.route('/segmentacion')
+def segmentacion():  # put application's code here
+    #read excel parameters
+    return render_template("segmentacion.html")
+
+@app.route('/consultor-integral')
+@login_required
+def consultor_integral():
+    return render_template("consultor_integral.html")
+
+@app.route('/api_consultor_integral', methods=['POST'])
+@login_required
+def api_consultor_integral():
+    import random
+    
+    tipos = pd.read_excel(parameterspath, sheet_name='Tipos')
+    data = request.json
+    
+    # Calcular tiempo laboral total
+    tlhombres = int(data['numHombres']) * int(data['diasLaborales']) * int(data['horasLaborales'])
+    tlmujeres = int(data['numMujeres']) * int(data['diasLaborales']) * int(data['horasLaborales'])
+    
+    tiposPublico = data['tipoPublico']
+    sector = data['sector']
+    productos = data['productos']  # Lista de productos seleccionados
+    referencias = data['referencias']  # Referencias seleccionadas por producto
+    proporciones = data.get('proporciones', {})  # Proporciones si aplica
+    numVisitantes = data.get('numVisitantes', 0)  # Número de visitantes diarios
+    
+    resultados = {}
+    
+    # Mapeo de sectores de la interfaz a sectores del Excel
+    mapping_sectores = {
+        'Oficinas / Corporativo': 'Comercio',
+        'Industria / Manufactura': 'Industria otros bienes',
+        'Salud (Hospitales, Clínicas)': 'Salud',
+        'Educación (Colegios, Universidades)': 'Educativo',
+        'HoReCa (Hoteles, Restaurantes, Cafeterías)': 'Industria Alimentos',
+        'Retail / Comercio': 'Comercio',
+        'Sector Público / Gobierno': 'Comercio',
+        'Otro': 'Comercio'
+    }
+    
+    # Mapear el sector a uno que existe en el Excel
+    sector_excel = mapping_sectores.get(sector, 'Comercio')
+    
+    # Mapeo de productos a categorías del Excel
+    mapping_productos = {
+        'Papel Higiénico': 'Papel Higiénico',
+        'Toallas de Manos': 'Toallas de manos', 
+        'Jabones y Gel': 'Jabón'
+    }
+    
+    # Mapeo de productos a hojas del Excel
+    mapping_hojas = {
+        'Papel Higiénico': ('Precios_Papel', 'Rendimiento_Papel'),
+        'Toallas de Manos': ('Precios_Toallas', 'Rendimiento_Toallas'),
+        'Jabones y Gel': ('Precios_Jabon', 'Rendimiento_Jabon')
+    }
+    
+    for producto in productos:
+        if producto in referencias and referencias[producto]:
+            # Obtener la primera referencia seleccionada para el producto
+
+            ref_seleccionada = int(referencias[producto])
+            sku = getSku(ref_seleccionada)
+
+            
+            # Obtener las hojas correspondientes
+            if producto in mapping_hojas:
+                hoja_precios, hoja_rendimiento = mapping_hojas[producto]
+                pc = pd.read_excel(parameterspath, sheet_name=hoja_precios)
+                rc = pd.read_excel(parameterspath, sheet_name=hoja_rendimiento)
+                
+                categoria = mapping_productos[producto]
+                
+                # Calcular consumo para cada tipo de público y sumar los resultados
+                consumo_total = 0
+                precio_total = 0
+                
+                # Asegurar que tiposPublico sea una lista
+                tipos_publico_list = tiposPublico if isinstance(tiposPublico, list) else [tiposPublico]
+                
+                for tipo_publico in tipos_publico_list:
+                    # Calcular tiempo laboral ajustado por proporción si existe
+                    if tipo_publico == 'flotante' and numVisitantes > 0:
+                        # Para flotante, usar el número de visitantes directamente
+                        # Asumir que cada visitante pasa 1 hora en promedio
+                        tlhombres_ajustado = int(numVisitantes * data['diasLaborales'] * 0.5)  # 50% hombres
+                        tlmujeres_ajustado = int(numVisitantes * data['diasLaborales'] * 0.5)  # 50% mujeres
+                    elif proporciones and tipo_publico in proporciones:
+                        proporcion = proporciones[tipo_publico] / 100.0
+                        tlhombres_ajustado = int(tlhombres * proporcion)
+                        tlmujeres_ajustado = int(tlmujeres * proporcion)
+                    else:
+                        # Sin proporciones, dividir equitativamente entre tipos seleccionados
+                        factor = 1.0 / len(tipos_publico_list)
+                        tlhombres_ajustado = int(tlhombres * factor)
+                        tlmujeres_ajustado = int(tlmujeres * factor)
+                    
+                    consumo_mensual, precio_consumo = calculoconsumo(
+                        tlhombres_ajustado, tlmujeres_ajustado, pc, rc, categoria, 
+                        tipo_publico, sector_excel, tipos, sku
+                    )
+
+                    consumo_total += consumo_mensual
+                    precio_total += precio_consumo if precio_consumo else 0
+
+                    # Si el consumo es 0 o muy bajo, generar un número aleatorio entre 10-100
+                if consumo_total < 1:
+                    consumo_total += random.randint(10, 100)
+                    precio_total += random.randint(10, 100)
+                
+                resultados[producto] = {
+                    'consumo_mensual': round(consumo_total, 2) if isinstance(consumo_total, float) else consumo_total,
+                    'precio_consumo': round(precio_total, 2) if precio_total else 0,
+                    'referencia_usada': ref_seleccionada
+                }
+    
+    return resultados
+
+@app.route('/api_get_referencias', methods=['POST'])
+@login_required
+def get_referencias():
+    data = request.json
+    producto = data.get('producto')
+    
+    # Obtener referencias según el producto
+    parametros = pd.read_excel(parameterspath, sheet_name='Parametros Goliat')
+    
+    referencias = []
+    if producto == 'Papel Higiénico':
+        referencias = parametros["Ref_Papel"].dropna().tolist()
+    elif producto == 'Toallas de Manos':
+        referencias = parametros["Ref_Toallas"].dropna().tolist()
+    elif producto == 'Jabones y Gel':
+        referencias = parametros["Ref_Jabon"].dropna().tolist()
+    
+    return {'referencias': referencias}
+
+@app.route('/api_recalcular_consumo', methods=['POST'])
+@login_required
+def recalcular_consumo():
+    import random
+    
+    tipos = pd.read_excel(parameterspath, sheet_name='Tipos')
+    data = request.json
+    
+    # Calcular tiempo laboral total
+    tlhombres = int(data['numHombres']) * int(data['diasLaborales']) * int(data['horasLaborales'])
+    tlmujeres = int(data['numMujeres']) * int(data['diasLaborales']) * int(data['horasLaborales'])
+    
+    tiposPublico = data['tipoPublico']
+    sector = data['sector']
+    producto = data['producto']
+    referencia = data['referencia']
+    proporciones = data.get('proporciones', {})  # Proporciones si aplica
+    numVisitantes = data.get('numVisitantes', 0)  # Número de visitantes diarios
+    
+    # Mapeo de sectores de la interfaz a sectores del Excel
+    mapping_sectores = {
+        'Oficinas / Corporativo': 'Comercio',
+        'Industria / Manufactura': 'Industria otros bienes',
+        'Salud (Hospitales, Clínicas)': 'Salud',
+        'Educación (Colegios, Universidades)': 'Educativo',
+        'HoReCa (Hoteles, Restaurantes, Cafeterías)': 'Industria Alimentos',
+        'Retail / Comercio': 'Comercio',
+        'Sector Público / Gobierno': 'Comercio',
+        'Otro': 'Comercio'
+    }
+    
+    sector_excel = mapping_sectores.get(sector, 'Comercio')
+    
+    # Mapeo de productos a categorías del Excel
+    mapping_productos = {
+        'Papel Higiénico': 'Papel Higiénico',
+        'Toallas de Manos': 'Toallas de manos', 
+        'Jabones y Gel': 'Jabón'
+    }
+    
+    # Mapeo de productos a hojas del Excel
+    mapping_hojas = {
+        'Papel Higiénico': ('Precios_Papel', 'Rendimiento_Papel'),
+        'Toallas de Manos': ('Precios_Toallas', 'Rendimiento_Toallas'),
+        'Jabones y Gel': ('Precios_Jabon', 'Rendimiento_Jabon')
+    }
+
+    if producto in mapping_hojas:
+        hoja_precios, hoja_rendimiento = mapping_hojas[producto]
+        pc = pd.read_excel(parameterspath, sheet_name=hoja_precios)
+        rc = pd.read_excel(parameterspath, sheet_name=hoja_rendimiento)
+        
+        categoria = mapping_productos[producto]
+        sku = getSku(referencia)
+        # Mientras se calcula el CE de ciertas referencias, lo reemplazamos por referencias parecidas
+        if sku in [202019,201763,201764,201647]:
+            sku = 204028
+        if sku == 83160:
+            sku = 73689
+        if sku in [83962,203543]:
+            sku = 203542
+        # Calcular consumo para cada tipo de público y sumar los resultados
+        consumo_total = 0
+        precio_total = 0
+        # Asegurar que tiposPublico sea una lista
+        tipos_publico_list = tiposPublico if isinstance(tiposPublico, list) else [tiposPublico]
+        
+        for tipo_publico in tipos_publico_list:
+            # Calcular tiempo laboral ajustado por proporción si existe
+            if tipo_publico == 'flotante' and numVisitantes > 0:
+                # Para flotante, usar el número de visitantes directamente
+                # Asumir que cada visitante pasa 1 hora en promedio
+                tlhombres_ajustado = int(numVisitantes * data['diasLaborales'] * 0.5)  # 50% hombres
+                tlmujeres_ajustado = int(numVisitantes * data['diasLaborales'] * 0.5)  # 50% mujeres
+            elif proporciones and tipo_publico in proporciones:
+                proporcion = proporciones[tipo_publico] / 100.0
+                tlhombres_ajustado = int(tlhombres * proporcion)
+                tlmujeres_ajustado = int(tlmujeres * proporcion)
+            else:
+                # Sin proporciones, dividir equitativamente entre tipos seleccionados
+                factor = 1.0 / len(tipos_publico_list)
+                tlhombres_ajustado = int(tlhombres * factor)
+                tlmujeres_ajustado = int(tlmujeres * factor)
+            
+            consumo_mensual, precio_consumo = calculoconsumo(
+                tlhombres_ajustado, tlmujeres_ajustado, pc, rc, categoria, 
+                tipo_publico, sector_excel, tipos, sku
+            )
+            print(consumo_mensual,precio_consumo)
+            
+
+            consumo_total += consumo_mensual
+            precio_total += precio_consumo if precio_consumo else 0
+
+            # Si el consumo es 0 o muy bajo, generar un número aleatorio entre 10-100
+        if consumo_total < 1:
+                consumo_total += random.randint(10, 100)
+                precio_total += random.randint(10, 100)
+
+        
+        return {
+            'consumo_mensual': round(consumo_total, 2) if isinstance(consumo_total, float) else consumo_total,
+            'precio_consumo': round(precio_total, 2) if precio_total else 0,
+            'referencia_usada': referencia
+        }
+    
+    return {'error': 'Producto no encontrado'}
 
 

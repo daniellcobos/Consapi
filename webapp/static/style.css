@@ -75,3 +75,53 @@
         .stat-number { font-size: 3rem; font-weight: bold; color: #1d4ed8; line-height: 1; }
         .stat-number .percentage { font-size: 1.5rem; vertical-align: super; }
         .stat-text { font-size: 0.9rem; color: #4b5563; margin-top: 0.5rem; }
+                /* Estilos adicionales para el chat */
+         .chat-message {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            max-width: 80%;
+            opacity: 0; /* Inicialmente oculto para la animación */
+            transform: translateY(10px); /* Ligeramente desplazado para la animación */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+        .chat-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .chat-message.user {
+            background-color: #e0f2fe; /* light blue */
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .chat-message.gemini {
+            background-color: #f0f0f0; /* light gray */
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: #ffffff;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .chat-container-expanded {
+            height: 80vh !important; /* Altura expandida, ajusta según sea necesario */
+            width: 1200px !important; /* Ancho expandido */
+            transition: height 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+        .chat-container-collapsed {
+            height: 350px !important; /* Altura colapsada inicial */
+            width: 484px !important; /* Ancho colapsado (w-96 de Tailwind) */
+            transition: height 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
