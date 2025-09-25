@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app, request, jsonify
+from flask import Blueprint, render_template, current_app, request, jsonify,session,redirect,url_for
 from flask_login import login_required
 import requests
 
@@ -47,5 +47,8 @@ def chatbot_proxy():
 
 @bp.route('/consultor-integral')
 @login_required
+
 def consultor_integral():
+    if session['Username'] == 'edexa':
+        return redirect(url_for('index'))
     return render_template("consultor_integral.html")

@@ -81,3 +81,42 @@ The application runs on host 0.0.0.0 (all interfaces) with Flask's default port.
 - Product reference management with SKU parsing
 - Sector-specific consumption patterns
 - Error handling for calculation failures
+
+## Consultor Integral Styling
+
+The `consultor_integral.html` template and `consultor_integral.css` stylesheet have been refactored with consistent Tork branding:
+
+### Color Palette
+- **Tork Blue**: `#00205b` - Primary brand color for text, borders, and primary elements
+- **Secondary Blue**: `#0070C0` - Navigation buttons (Anterior/Siguiente) and option buttons
+- **Tork Green**: `#00853F` - Selected states, success indicators, and accent elements
+- **Background Blue**: `#CDEBFE` - Light background for recommendation sections
+- **White**: `white` - Clean backgrounds for cards, forms, and content areas
+
+### Typography
+- **Font Family**: Helvetica Neue with fallbacks (`'Helvetica Neue', Helvetica, Arial, sans-serif`)
+- Applied consistently across all elements including Selectize dropdowns
+
+### Key Styling Changes
+1. **CSS Extraction**: Moved 800+ lines of CSS from inline styles to external stylesheet
+2. **Color Consistency**: Updated all elements to use consistent Tork brand colors
+3. **Component Refactoring**: Created reusable CSS classes for step 4 recommendations:
+   - `.recommendation-grid` - Layout for recommendation sections
+   - `.recommendation-option-title` - Tork blue titles
+   - `.reference-button` / `.dispenser-button` - Styled interaction buttons
+   - `.consumption-item` - White background consumption cards
+   - `.reference-select` - Consistent dropdown styling
+4. **Responsive Design**: Maintained mobile-friendly grid layouts
+5. **Selectize Integration**: Custom styling for dropdown components with Helvetica Neue
+
+### Layout Structure
+- **Left Sidebar**: White background with Tork blue text and borders
+- **Step Items**: White backgrounds with Tork blue borders (green when completed)
+- **Main Content**: Clean white cards with appropriate color accents
+- **Navigation**: Secondary blue buttons for consistent user flow
+
+### Brand Compliance
+- Removed all gradients for clean, professional appearance
+- Eliminated emoji usage throughout interface
+- Consistent border treatments and shadow effects
+- Professional color hierarchy with proper contrast ratios

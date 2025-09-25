@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request
+from flask import Flask,render_template,request,session,redirect,url_for
 from os import path
 import pandas as pd
 from webapp import auth
@@ -6,6 +6,7 @@ from webapp import vendor
 from webapp.sqla import sqla
 from webapp.login import login_manager
 from flask_login import current_user, login_required
+from webapp.models.portafolio import Portafolio
 import config
 from flask_cors import CORS
 
@@ -168,6 +169,8 @@ def segmentacion():  # put application's code here
 @app.route('/consultor-integral')
 @login_required
 def consultor_integral():
+    if session['Username'] == 'edexa':
+        return redirect(url_for('index'))
     return render_template("consultor_integral.html")
 
 @app.route('/api_consultor_integral', methods=['POST'])
@@ -354,8 +357,7 @@ def recalcular_consumo():
         categoria = mapping_productos[producto]
         sku = getSku(referencia)
         # Mientras se calcula el CE de ciertas referencias, lo reemplazamos por referencias parecidas
-        if sku in [202019,201763,201764,201647]:
-            sku = 204028
+
         if sku == 83160:
             sku = 73689
         if sku in [83962,203543]:
@@ -407,4 +409,60 @@ def recalcular_consumo():
     
     return {'error': 'Producto no encontrado'}
 
+@app.route('/save_portfolio', methods=['POST'])
+def report_portfolio():
+    try:
+        portfolio_data = request.json
+        print("Received portfolio data:", portfolio_data)
+        
+        # Call the save_portfolio method
+        result = save_portfolio(portfolio_data)
+        
+        if result['success']:
+            return {'success': True, 'message': 'Portfolio saved successfully', 'id': result['id']}, 200
+        else:
+            return {'success': False, 'message': 'Error saving portfolio', 'error': result['error']}, 500
+            
+    except Exception as e:
+        return {'success': False, 'message': 'Server error', 'error': str(e)}, 500
 
+
+def save_portfolio(portfolio):
+    try:
+        # Create new Portafolio instance
+        new_portfolio = Portafolio(
+            sector=portfolio.get('sector'),
+            mujeres=portfolio.get('mujeres'),
+            hombres=portfolio.get('hombres'),
+            dias=portfolio.get('dias'),
+            horas=portfolio.get('horas'),
+            tipo=portfolio.get('tipo'),
+            refpapel=portfolio.get('refpapel'),
+            conspapel=portfolio.get('conspapel'),
+            refjabones=portfolio.get('refjabones'),
+            consjabones=portfolio.get('consjabones'),
+            reftoallas=portfolio.get('reftoallas'),
+            constoallas=portfolio.get('constoallas')
+        )
+        
+        # Add to database session and commit
+        sqla.session.add(new_portfolio)
+        sqla.session.commit()
+        
+        return {'success': True, 'id': new_portfolio.id}
+        
+    except Exception as e:
+        sqla.session.rollback()
+        return {'success': False, 'error': str(e)}
+
+
+@app.route('/read_portfolios', methods=['GET'])
+@login_required
+def read_portfolios():
+    if session['Username'] == 'edexa':
+        return redirect(url_for('index'))
+    try:
+        portfolios = Portafolio.query.all()
+        return render_template('portfolio_list.html', portfolios=portfolios)
+    except Exception as e:
+        return {'success': False, 'message': 'Error fetching portfolios', 'error': str(e)}, 500
