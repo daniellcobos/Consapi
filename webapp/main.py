@@ -409,6 +409,183 @@ def recalcular_consumo():
     
     return {'error': 'Producto no encontrado'}
 
+
+@app.route('/api_portfolio_data', methods=['GET'])
+def get_portfolio_data():
+    """API endpoint to serve Portfolio.xlsx data for product recommendations"""
+    try:
+        import pandas as pd
+        import os
+
+        # Try original file first, then fallback to copy
+        portfolio_path = os.path.join(app.static_folder, 'Portfolio.xlsx')
+
+        # If original doesn't exist or can't be read, try the copy
+        if not os.path.exists(portfolio_path):
+            portfolio_path = os.path.join(app.static_folder, 'Portfolio_copy.xlsx')
+
+        if not os.path.exists(portfolio_path):
+            return {'error': 'Portfolio.xlsx not found'}, 404
+
+        # Read Excel file with proper encoding
+        # Try to read, and if there's a permission error, try the other file
+        try:
+            df = pd.read_excel(portfolio_path)
+        except PermissionError:
+            # If we tried Portfolio.xlsx and got permission error, try Portfolio_copy.xlsx
+            alternate_path = os.path.join(app.static_folder, 'Portfolio_copy.xlsx' if 'Portfolio.xlsx' in portfolio_path else 'Portfolio.xlsx')
+            if os.path.exists(alternate_path):
+                df = pd.read_excel(alternate_path)
+            else:
+                raise
+
+        # Clean column names and data
+        df.columns = ['segment', 'product', 'traffic', 'positioning', 'references', 'dispenser']
+
+        # Fix encoding issues by mapping corrupted text to correct Spanish
+        encoding_fixes = {
+            'Papel Higi�nico': 'Papel Higiénico',
+            'Higiene Cr�tica': 'Higiene Crítica',
+            'Tr�fico Bajo': 'Tráfico Bajo',
+            'Tr�fico Medio': 'Tráfico Medio',
+            'Tr�fico Alto': 'Tráfico Alto',
+            'Tr�fico Pico': 'Tráfico Pico'
+        }
+
+        # Apply encoding fixes to dataframe
+        for col in ['segment', 'product', 'traffic']:
+            df[col] = df[col].apply(lambda x: encoding_fixes.get(str(x), str(x)) if pd.notna(x) else x)
+
+        # Normalize segment names to match frontend expectations
+        segment_mapping = {
+            'Higiene Crítica': 'Higiene Crítica',
+            'Wow Factor': 'Wow Factor',
+            'Restroom Plus': 'Restroom Plus',
+            'Essential': 'Essential'
+        }
+
+        # Normalize product names
+        product_mapping = {
+            'Papel Higiénico': 'Papel Higiénico',
+            'Toallas de Manos': 'Toallas de Manos',
+            'Jabones y Gel': 'Jabones y Gel'
+        }
+
+        # Normalize traffic levels
+        traffic_mapping = {
+            'Tráfico Bajo': 'Tráfico Bajo',
+            'Tráfico Medio': 'Tráfico Medio',
+            'Tráfico Alto': 'Tráfico Alto',
+            'Tráfico Pico': 'Tráfico Pico'
+        }
+
+        # Build nested structure like the hardcoded data
+        portfolio_data = {}
+
+        for _, row in df.iterrows():
+            # Clean and parse data
+            segment = str(row['segment']).strip()
+            product = str(row['product']).strip()
+            traffic = str(row['traffic']).strip()
+            positioning = str(row['positioning']).strip() if pd.notna(row['positioning']) else 'N/A'
+            references_raw = str(row['references']).strip()
+            dispenser_raw = str(row['dispenser']).strip()
+
+            # Parse references (format: "203 230 , 203 169" -> ["203230", "203169"])
+            references = []
+            if references_raw and references_raw != 'nan':
+                # Split by comma, then remove ALL spaces from each reference
+                refs = [ref.strip().replace(' ', '') for ref in references_raw.split(',')]
+                references = [ref for ref in refs if ref and ref != '']
+
+            # Parse dispensers (format: "837 00 , 203 560" -> ["83700", "203560"])
+            dispensers = []
+            if dispenser_raw and dispenser_raw != 'nan' and dispenser_raw.upper() != 'ND':
+                # Split by comma, then remove ALL spaces from each dispenser
+                disps = [disp.strip().replace(' ', '') for disp in dispenser_raw.split(',')]
+                dispensers = [disp for disp in disps if disp and disp != '']
+
+            # Build nested structure
+            if product not in portfolio_data:
+                portfolio_data[product] = {}
+            if segment not in portfolio_data[product]:
+                portfolio_data[product][segment] = {}
+
+            # Create recommendation object
+            recommendation = {
+                'posicionamiento': positioning,
+                'referencias': references,
+                'dispensador': dispensers
+            }
+
+            portfolio_data[product][segment][traffic] = recommendation
+
+        # Fill in missing combinations with fallback data based on original hardcoded values
+        # Define the correct order for products
+        expected_products = ['Papel Higiénico', 'Toallas de Manos', 'Jabones y Gel']
+        expected_segments = ['Essential', 'Restroom Plus', 'Wow Factor', 'Higiene Crítica']
+        expected_traffic = ['Tráfico Bajo', 'Tráfico Medio', 'Tráfico Alto', 'Tráfico Pico']
+
+        # Define fallback data for missing combinations (from original hardcoded data)
+        fallback_data = {
+            'Papel Higiénico': {
+                'Higiene Crítica': {
+                    'Tráfico Pico': {
+                        'posicionamiento': 'Tork SmartOne® Maxi',
+                        'referencias': ['202581', '71187'],
+                        'dispensador': ['83600']
+                    }
+                }
+            }
+        }
+
+        # Fill in missing combinations
+        for product in expected_products:
+            if product not in portfolio_data:
+                portfolio_data[product] = {}
+
+            for segment in expected_segments:
+                if segment not in portfolio_data[product]:
+                    portfolio_data[product][segment] = {}
+
+                for traffic in expected_traffic:
+                    if traffic not in portfolio_data[product][segment]:
+                        # Check if we have fallback data
+                        if (product in fallback_data and
+                            segment in fallback_data[product] and
+                            traffic in fallback_data[product][segment]):
+                            portfolio_data[product][segment][traffic] = fallback_data[product][segment][traffic]
+                        else:
+                            # Create empty placeholder
+                            portfolio_data[product][segment][traffic] = {
+                                'posicionamiento': 'No disponible',
+                                'referencias': [],
+                                'dispensador': []
+                            }
+
+        # Return portfolio_data with products in the correct order
+        ordered_portfolio_data = {}
+
+        # Handle both corrected and potentially encoding-corrupted versions
+        product_aliases = {
+            'Papel Higiénico': ['Papel Higiénico', 'Papel Higi�nico'],
+            'Toallas de Manos': ['Toallas de Manos'],
+            'Jabones y Gel': ['Jabones y Gel']
+        }
+
+        for expected_product in expected_products:
+            # Find the actual key in portfolio_data that matches this product
+            for alias in product_aliases.get(expected_product, [expected_product]):
+                if alias in portfolio_data:
+                    ordered_portfolio_data[expected_product] = portfolio_data[alias]
+                    break
+
+        return ordered_portfolio_data
+
+    except Exception as e:
+        return {'error': f'Error loading portfolio data: {str(e)}'}, 500
+
+
 @app.route('/save_portfolio', methods=['POST'])
 def report_portfolio():
     try:

@@ -1,133 +1,307 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Formato Cliente</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Test - Tork Solutions</title>
   <style>
-    /* Estilos para el formulario (puedes personalizarlos) */
-    form {
-      width: 500px;
-      margin: 0 auto;
+    /* Tork Brand Colors */
+    :root {
+      --tork-blue: #00205b;
+      --secondary-blue: #0070C0;
+      --tork-green: #00853F;
+      --background-blue: #CDEBFE;
     }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #f8fafc;
+      color: var(--tork-blue);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background: white;
+      border: 2px solid var(--tork-blue);
+      padding: 30px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      color: var(--tork-blue);
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .header p {
+      color: var(--tork-blue);
+      font-size: 1.1em;
+      margin-bottom: 20px;
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .nav-links a {
+      color: var(--secondary-blue);
+      text-decoration: none;
+      padding: 10px 20px;
+      border: 2px solid var(--secondary-blue);
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      background: var(--secondary-blue);
+      color: white;
+    }
+
+    .form-container {
+      background: white;
+      border: 2px solid var(--tork-blue);
+      padding: 40px;
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      background: var(--tork-blue);
+      color: white;
+      padding: 15px 20px;
+      margin: -40px -40px 30px -40px;
+      font-size: 1.3em;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
     label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      color: var(--tork-blue);
+      font-weight: 600;
+      font-size: 1em;
     }
-    input[type="text"], select {
+
+    input[type="number"],
+    select {
       width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      color: var(--tork-blue);
+      font-size: 1em;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      transition: border-color 0.3s ease;
     }
-    .blue-header {
-      background-color: #007bff;
+
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--secondary-blue);
+    }
+
+    .submit-btn {
+      background: var(--secondary-blue);
       color: white;
-      padding: 10px;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+      background: var(--tork-blue);
+    }
+
+    .results-container {
+      background: white;
+      border: 2px solid var(--tork-green);
+      padding: 40px;
+      margin-top: 30px;
+    }
+
+    .results-header {
+      background: var(--tork-green);
+      color: white;
+      padding: 15px 20px;
+      margin: -40px -40px 30px -40px;
+      font-size: 1.3em;
+      font-weight: 600;
+    }
+
+    .results-content {
+      background: var(--background-blue);
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .results-content p {
+      background: white;
+      padding: 15px;
       margin-bottom: 10px;
+      border: 1px solid var(--tork-blue);
+      word-wrap: break-word;
+      font-family: monospace;
+      font-size: 0.9em;
     }
   </style>
 </head>
 <body>
-
-  <div class="blue-header">
-    <h2>Información del Cliente</h2>
-      <a style="color: white;" href="/auth/logout">Salir</a>
-      <a style="color: white;" href="/guia">Guia</a>
-  </div>
- <div class="blue-header" id="resultados">
-    <h2>Resultados</h2>
-  </div>
-  <form>
-
-    <label for="sector">Sector:</label>
-    <select id="sector" name="sector">
-      <option value="Industria Alimentos">Industria Alimentos</option>
-         <option value="Industria otros bienes">Industria otros bienes</option>
- <option value="Comercio">Comercio</option>
- <option value="Educativo">Educativo</option>
- <option value="Salud">Salud</option>
-
-      <option value="otro">Otro</option>
-    </select>
-
-    <div class="blue-header">
-      <h2>Detalles del Personal</h2>
+  <div class="container">
+    <div class="header">
+      <img src="{{ url_for('static', filename='images/tork_think-ahead_vertical.png') }}"
+           alt="Tork - Think ahead"
+           style="max-width: 180px; height: auto; margin-bottom: 20px;">
+      <h1>API Test</h1>
+      <p>Calculadora de Consumo para Desarrollo</p>
+      <div class="nav-links">
+        <a href="/auth/logout">Salir</a>
+        <a href="/guia">Guía</a>
+      </div>
     </div>
 
-    <label for="tipo_publico">Tipo de Público:</label>
-    <select id="tipo_publico" name="tipo_publico">
-      <option value="Administrativo">Administrativo</option>
-      <option value="Operativo">Operativo</option>
-      <option value="Flotante">Flotante</option>
-    </select>
+    <form id="main-form">
+      <div class="form-container">
+        <div class="section-header">Información del Cliente</div>
+        <div class="form-group">
+          <label for="sector">Sector:</label>
+          <select id="sector" name="sector">
+            <option value="Industria Alimentos">Industria Alimentos</option>
+            <option value="Industria otros bienes">Industria otros bienes</option>
+            <option value="Comercio">Comercio</option>
+            <option value="Educativo">Educativo</option>
+            <option value="Salud">Salud</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+      </div>
 
-    <label for="num_mujeres">Número de Mujeres:</label>
-    <input type="number" id="num_mujeres" name="num_mujeres">
+      <div class="form-container">
+        <div class="section-header">Detalles del Personal</div>
+        <div class="form-group">
+          <label for="tipo_publico">Tipo de Público:</label>
+          <select id="tipo_publico" name="tipo_publico">
+            <option value="Administrativo">Administrativo</option>
+            <option value="Operativo">Operativo</option>
+            <option value="Flotante">Flotante</option>
+          </select>
+        </div>
 
-    <label for="num_hombres">Número de Hombres:</label>
-    <input type="number" id="num_hombres" name="num_hombres">
+        <div class="form-group">
+          <label for="num_mujeres">Número de Mujeres:</label>
+          <input type="number" id="num_mujeres" name="num_mujeres">
+        </div>
 
-    <label for="dias_laborales">Días laborales/mes:</label>
-    <input type="number" id="dias_laborales" name="dias_laborales">
+        <div class="form-group">
+          <label for="num_hombres">Número de Hombres:</label>
+          <input type="number" id="num_hombres" name="num_hombres">
+        </div>
 
-    <label for="horas_laborales">Horas laborales/día:</label>
-    <input type="number" id="horas_laborales" name="horas_laborales">
+        <div class="form-group">
+          <label for="dias_laborales">Días laborales/mes:</label>
+          <input type="number" id="dias_laborales" name="dias_laborales">
+        </div>
 
-    <label for="tpref">Referencia Papel:</label>
-    <select id="tpref" name="tpref">
-        <option value="na" selected> No Aplica </option>
-        {% for tp in tplist  %}
+        <div class="form-group">
+          <label for="horas_laborales">Horas laborales/día:</label>
+          <input type="number" id="horas_laborales" name="horas_laborales">
+        </div>
+      </div>
 
-            <option value="{{ tp }}"> {{ tp }}</option>
-        {% endfor %}
-    </select>
+      <div class="form-container">
+        <div class="section-header">Referencias de Productos</div>
+        <div class="form-group">
+          <label for="tpref">Referencia Papel:</label>
+          <select id="tpref" name="tpref">
+            <option value="na" selected>No Aplica</option>
+            {% for tp in tplist %}
+            <option value="{{ tp }}">{{ tp }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
+        <div class="form-group">
+          <label for="htref">Referencia Toallas:</label>
+          <select id="htref" name="htref">
+            <option value="na" selected>No Aplica</option>
+            {% for ht in htlist %}
+            <option value="{{ ht }}">{{ ht }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
-  <label for="htref">Referencia Toallas:</label>
-    <select id="htref" name="htref">
-    <option value="na" selected> No Aplica </option>
-        {% for ht in htlist  %}
-            <option value="{{ ht }}"> {{ ht }}</option>
-        {% endfor %}
-    </select>
+        <div class="form-group">
+          <label for="sref">Referencia Jabón:</label>
+          <select id="sref" name="sref">
+            <option value="na" selected>No Aplica</option>
+            {% for s in slist %}
+            <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
+        <div class="form-group">
+          <label for="srref">Referencia Servilletas:</label>
+          <select id="srref" name="srref">
+            <option value="na" selected>No Aplica</option>
+            {% for sr in srlist %}
+            <option value="{{ sr }}">{{ sr }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
-  <label for="sref">Referencia Jabon:</label>
-    <select id="sref" name="sref">
-    <option value="na" selected> No Aplica </option>
-        {% for s in slist  %}
-            <option value="{{ s }}"> {{ s }}</option>
-        {% endfor %}
-    </select>
+        <div class="form-group">
+          <label for="lmref">Referencia Limpiones:</label>
+          <select id="lmref" name="lmref">
+            <option value="na" selected>No Aplica</option>
+            {% for lm in lmlist %}
+            <option value="{{ lm }}">{{ lm }}</option>
+            {% endfor %}
+          </select>
+        </div>
 
+        <button type="submit" class="submit-btn">Generar Simulador</button>
+      </div>
+    </form>
 
-  <label for="srref">Referencia Servilletas:</label>
-    <select id="srref" name="srref">
-    <option value="na" selected> No Aplica </option>
-        {% for sr in srlist  %}
-            <option value="{{ sr }}"> {{ sr }}</option>
-        {% endfor %}
-    </select>
-    <label for="lmref">Referencia Limpiones:</label>
-    <select id="lmref" name="lmref">
-    <option value="na" selected> No Aplica </option>
-        {% for lm in lmlist  %}
-            <option value="{{ lm }}"> {{ lm }}</option>
-        {% endfor %}
-    </select>
-
-
-
-    <br><br>
-
-    <button type="submit">Generar Simulador</button>
-
-  </form>
+    <div class="results-container" id="resultados" style="display: none;">
+      <div class="results-header">Resultados</div>
+      <div class="results-content" id="results-content">
+        <!-- Los resultados aparecerán aquí -->
+      </div>
+    </div>
+  </div>
 
 </body>
 
 <script>
     let historico = 1
-    document.querySelector('form').addEventListener('submit', function(event) {
+    document.getElementById('main-form').addEventListener('submit', function(event) {
   event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
 
   // Obtiene los valores del formulario
@@ -183,10 +357,21 @@
 });
 
 const writeConsumo = (datos) => {
-    const consmumo = document.createElement('p')
-    consmumo.innerText = datos
-    const datosdom = document.getElementById('resultados')
-    datosdom.appendChild(consmumo)
+    const resultadosContainer = document.getElementById('resultados');
+    const resultsContent = document.getElementById('results-content');
+
+    // Show the results container
+    resultadosContainer.style.display = 'block';
+
+    // Create new result element
+    const consumo = document.createElement('p');
+    consumo.innerText = datos;
+
+    // Add to results content
+    resultsContent.appendChild(consumo);
+
+    // Scroll to results
+    resultadosContainer.scrollIntoView({ behavior: 'smooth' });
 }
 
 </script>
