@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Portfolio Integration</title>
+</head>
+<body>
+    <h1>Portfolio Data Test</h1>
+    <div id="result"></div>
+
+    <script>
+        async function testPortfolioData() {
+            try {
+                const response = await fetch('/api_portfolio_data');
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Portfolio data loaded:', data);
+
+                    // Test accessing data like the frontend does
+                    const papelHigienico = data['Papel Higiénico'];
+                    const higieneCritica = papelHigienico['Higiene Crítica'];
+                    const traficoBajo = higieneCritica['Tráfico Bajo'];
+
+                    document.getElementById('result').innerHTML = `
+                        <h2>Success! Portfolio data loaded</h2>
+                        <h3>Sample data: Papel Higiénico > Higiene Crítica > Tráfico Bajo</h3>
+                        <p><strong>Posicionamiento:</strong> ${traficoBajo.posicionamiento}</p>
+                        <p><strong>Referencias:</strong> ${traficoBajo.referencias.join(', ')}</p>
+                        <p><strong>Dispensador:</strong> ${traficoBajo.dispensador.join(', ')}</p>
+                        <p><strong>Total products:</strong> ${Object.keys(data).length}</p>
+                        <p><strong>Products:</strong> ${Object.keys(data).join(', ')}</p>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = '<h2>Error: ' + response.status + '</h2>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = '<h2>Error: ' + error.message + '</h2>';
+            }
+        }
+
+        // Test on page load
+        document.addEventListener('DOMContentLoaded', testPortfolioData);
+    </script>
+</body>
+</html>

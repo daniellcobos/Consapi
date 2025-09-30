@@ -825,7 +825,13 @@
                 }
 
                 // Check if there are recommendations
-                if (!recommendation || (Array.isArray(recommendation) && recommendation.length === 0)) {
+                const hasReferences = recommendation && (
+                    (Array.isArray(recommendation) && recommendation.length > 0 && recommendation[0].referencias && recommendation[0].referencias.length > 0) ||
+                    (!Array.isArray(recommendation) && recommendation.referencias && recommendation.referencias.length > 0)
+                );
+
+                if (!hasReferences) {
+                    console.log("No hay recomendaciones")
                     // No recommendations available - show message and consumption selector
                     recommendationsHTML += `
                         <div class="recommendation-group" style="margin-bottom: 25px;">
@@ -834,23 +840,21 @@
                                     <h3 class="recommendation-option-title">No hay sugerencias disponibles</h3>
                                     <p style="color: #64748b; margin-top: 10px;">No se encontraron recomendaciones específicas para este producto en el segmento y nivel de tráfico seleccionados.</p>
                                 </div>
-                                ${productConsumption ? `
-                                    <div class="consumption-item">
-                                        <h4 class="consumption-title">
-                                            Consumo Mensual
-                                        </h4>
-                                        <div class="reference-selector">
-                                            <label for="ref-${product.replace(/\s/g, '-')}">Referencia actual:</label>
-                                            <select id="ref-${product.replace(/\s/g, '-')}" data-producto="${product}" class="reference-select">
-                                                <option value="${companyData.selectedReferences ? companyData.selectedReferences[product] : productConsumption.referencia_usada}">${companyData.selectedReferences ? companyData.selectedReferences[product] : productConsumption.referencia_usada}</option>
-                                            </select>
-                                            <button class="recalculate-btn" onclick="recalcularConsumo('${product}')">Recalcular</button>
-                                        </div>
-                                        <p class="consumption-value" id="consumo-${product.replace(/\s/g, '-')}">
-                                            ${productConsumption.consumo_mensual} cajas/mes
-                                        </p>
+                                <div class="consumption-item">
+                                    <h4 class="consumption-title">
+                                        Consumo Mensual
+                                    </h4>
+                                    <div class="reference-selector">
+                                        <label for="ref-${product.replace(/\s/g, '-')}">Referencia actual:</label>
+                                        <select id="ref-${product.replace(/\s/g, '-')}" data-producto="${product}" class="reference-select">
+                                            <option value="${companyData.selectedReferences ? companyData.selectedReferences[product] : (productConsumption ? productConsumption.referencia_usada : '')}">${companyData.selectedReferences ? companyData.selectedReferences[product] : (productConsumption ? productConsumption.referencia_usada : '')}</option>
+                                        </select>
+                                        <button class="recalculate-btn" onclick="recalcularConsumo('${product}')">Recalcular</button>
                                     </div>
-                                ` : ''}
+                                    <p class="consumption-value" id="consumo-${product.replace(/\s/g, '-')}">
+                                        ${productConsumption ? productConsumption.consumo_mensual + ' cajas/mes' : 'No aplica'}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -961,13 +965,11 @@
             `;
             
             document.getElementById('quiz-container').innerHTML = recommendationsHTML;
-            
+
             // Cargar referencias para cada producto después de renderizar
-            if (Object.keys(consumptionData).length > 0) {
-                Object.keys(consumptionData).forEach(producto => {
-                    loadReferencesForProduct(producto);
-                });
-            }
+            companyData.products.forEach(producto => {
+                loadReferencesForProduct(producto);
+            });
         }
         
         async function loadReferencesForProduct(producto) {
@@ -1174,6 +1176,51 @@
                         alert('Error: ' + data.error);
                     } else {
                         consumoElement.innerHTML = `${data.consumo_mensual} cajas/mes`;
+
+                        // Extract reference number from select value
+                        const referenceMatch = nuevaReferencia.match(/^(\d+)/);
+                        const referenceNumber = referenceMatch ? referenceMatch[1] : nuevaReferencia;
+
+                        // Check if we need to create/update the reference image
+                        // Find the product heading
+                        const productHeading = Array.from(document.querySelectorAll('h3')).find(h => h.textContent.trim() === producto);
+
+                        if (productHeading) {
+                            // Check if image container already exists
+                            let imageGrid = productHeading.nextElementSibling;
+
+                            if (!imageGrid || !imageGrid.style.display || imageGrid.style.display.indexOf('grid') === -1) {
+                                // Image container doesn't exist, create it
+                                const newImageGrid = document.createElement('div');
+                                newImageGrid.style.display = 'grid';
+                                newImageGrid.style.gridTemplateColumns = '1fr 1fr';
+                                newImageGrid.style.gap = '20px';
+                                newImageGrid.style.margin = '20px 0';
+
+                                const referenceContainer = document.createElement('div');
+                                referenceContainer.className = 'reference-image-container';
+                                referenceContainer.style.textAlign = 'center';
+                                referenceContainer.style.padding = '20px';
+                                referenceContainer.style.background = 'white';
+                                referenceContainer.style.border = '2px solid #00205b';
+
+                                referenceContainer.innerHTML = `
+                                    <h4 style="color: #00205b; margin-bottom: 15px; font-weight: 600;">Referencia Seleccionada: ${referenceNumber}</h4>
+                                    <img src="{{ url_for('static', filename='images/') }}${referenceNumber}.png" alt="Imagen de referencia ${referenceNumber}"
+                                         style="max-width: 300px; max-height: 200px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; padding: 10px; display: block; margin: 0 auto;"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                    <div style="display: none; color: #64748b; font-style: italic; padding: 20px;">
+                                        Imagen no disponible para la referencia ${referenceNumber}
+                                    </div>
+                                `;
+
+                                newImageGrid.appendChild(referenceContainer);
+                                productHeading.parentNode.insertBefore(newImageGrid, productHeading.nextSibling);
+                            } else {
+                                // Update existing image
+                                updateReferenceImage(producto, referenceNumber);
+                            }
+                        }
                     }
                 } else {
                     consumoElement.innerHTML = 'Error en el cálculo';
