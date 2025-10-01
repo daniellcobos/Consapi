@@ -336,7 +336,7 @@
         function renderStep() {
             const step = steps[currentStep];
             const container = document.getElementById('quiz-container');
-            
+
             container.innerHTML = `
                 ${step.content}
                 <div class="navigation-buttons">
@@ -348,9 +348,17 @@
                     </button>
                 </div>
             `;
-            
+
             updateProgress();
             attachEventListeners();
+
+            // Scroll to current step title on mobile
+            if (window.innerWidth <= 768) {
+                const stepTitle = document.getElementById('current-step-title');
+                if (stepTitle) {
+                    stepTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
         }
         
         function attachEventListeners() {
@@ -367,7 +375,7 @@
                     }
                 });
             });
-            
+
             // Event listeners para selección de tipos de público
             document.querySelectorAll('.public-option').forEach(button => {
                 button.addEventListener('click', function() {
@@ -379,12 +387,12 @@
                         selectedPublicTypes.push(publicType);
                         this.style.background = '#00205b';
                     }
-                    
+
                     // Mostrar/ocultar inputs de proporción
                     updateProporcionInputs();
                 });
             });
-            
+
             // Event listeners para los inputs de proporción
             const propAdm = document.getElementById('prop-administrativo');
             const propOp = document.getElementById('prop-operativo');
@@ -393,12 +401,23 @@
                     input.addEventListener('input', updateTotalPorcentaje);
                 });
             }
-            
+
+            // Event listeners para validación de demografía
+            const numMujeres = document.getElementById('numMujeres');
+            const numHombres = document.getElementById('numHombres');
+            if (numMujeres && numHombres) {
+                [numMujeres, numHombres].forEach(input => {
+                    input.addEventListener('input', validateDemographicsStep);
+                });
+                // Validar al cargar el paso
+                validateDemographicsStep();
+            }
+
             // Event listeners para selección de segmento de baños
             document.querySelectorAll('.segment-option').forEach(button => {
                 button.addEventListener('click', function() {
                     const segment = this.dataset.segment;
-                    
+
                     // Reiniciar todos los botones de segmento al estilo por defecto
                     document.querySelectorAll('.segment-option').forEach(btn => {
                         btn.style.background = '#0070C0';
@@ -409,6 +428,27 @@
                     this.style.background = '#00205b';
                 });
             });
+        }
+
+        function validateDemographicsStep() {
+            const numMujeres = document.getElementById('numMujeres');
+            const numHombres = document.getElementById('numHombres');
+            const nextBtn = document.getElementById('next-btn');
+
+            if (numMujeres && numHombres && nextBtn) {
+                const mujeres = parseInt(numMujeres.value) || 0;
+                const hombres = parseInt(numHombres.value) || 0;
+
+                if (mujeres > 0 || hombres > 0) {
+                    nextBtn.disabled = false;
+                    nextBtn.style.opacity = '1';
+                    nextBtn.style.cursor = 'pointer';
+                } else {
+                    nextBtn.disabled = true;
+                    nextBtn.style.opacity = '0.5';
+                    nextBtn.style.cursor = 'not-allowed';
+                }
+            }
         }
         
         function updateProporcionInputs() {
@@ -616,11 +656,16 @@
             const totalEmployees = companyData.numMujeres + companyData.numHombres;
             const trafficLevel = determineTrafficLevel(totalEmployees, companyData.diasLaborales, companyData.horasLaborales);
             const segment = companyData.bathroomSegment; // Use user-selected segment
-            
+
+            // Scroll to top on mobile to prevent viewport jumping
+            if (window.innerWidth <= 768) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
             let recommendationsHTML = `
                 <div class="recommendation" id="report-content">
                     <h2>Recomendaciones Personalizadas</h2>
-                    
+
                     <div class="company-summary">
                         <h3>Resumen de su Empresa</h3>
                         <p><strong>Sector:</strong> ${companyData.sector}</p>
@@ -631,18 +676,18 @@
                         <p><strong>Segmento seleccionado:</strong> ${segment}</p>
                         <p><strong>Nivel de tráfico:</strong> ${trafficLevel}</p>
                     </div>
-                    
+
                     <div class="loading">
                         <p>Calculando consumo mensual...</p>
                     </div>
                 </div>
             `;
-            
+
             document.getElementById('quiz-container').innerHTML = recommendationsHTML;
-            
 
 
-            
+
+
             // Mark all steps as completed
             steps.forEach((step, index) => {
                 const stepItem = document.getElementById(`step-item-${index}`);
@@ -650,7 +695,7 @@
                     stepItem.className = 'step-item completed';
                 }
             });
-            
+
             // Calcular consumo mensual
             calculateConsumption(segment, trafficLevel, totalEmployees);
         }

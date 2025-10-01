@@ -716,12 +716,14 @@ h1 {
 @media (max-width: 768px) {
     body {
         padding: 5px;
+        overflow-anchor: none;
     }
 
     .container {
         grid-template-columns: 1fr;
         max-width: 600px;
         margin: 3px;
+        overflow-anchor: none;
     }
 
     .left-sidebar {
@@ -729,9 +731,27 @@ h1 {
         padding: 15px;
     }
 
+    .left-sidebar .sidebar-header img {
+        max-width: 100px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .left-sidebar .sidebar-header h1 {
+        font-size: 1.5em !important;
+    }
+
+    .left-sidebar .sidebar-header p {
+        font-size: 0.9em !important;
+    }
+
     .right-content {
         border-radius: 0 0 20px 20px;
         padding: 15px;
+        overflow-anchor: auto;
+    }
+
+    #quiz-container {
+        overflow-anchor: auto;
     }
 
     .steps-list {
@@ -764,10 +784,19 @@ h1 {
 
     .recommendation {
         margin: 0;
+        overflow-anchor: none;
     }
 
     .consumption-results {
         margin: 15px 0;
+    }
+
+    /* Prevenir saltos de viewport al cargar contenido */
+    .recommendation img {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        min-height: 200px;
     }
 }
 
