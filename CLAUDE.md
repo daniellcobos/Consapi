@@ -120,3 +120,102 @@ The `consultor_integral.html` template and `consultor_integral.css` stylesheet h
 - Eliminated emoji usage throughout interface
 - Consistent border treatments and shadow effects
 - Professional color hierarchy with proper contrast ratios
+
+## Consultor Integral JavaScript Refactor (Future)
+
+The JavaScript in `consultor_integral.html` is currently monolithic (~1500 lines in a single `<script>` tag). Below is the suggested modular structure for a future refactor:
+
+### Current Code Division by Function
+
+**1. Data Management & State**
+- `companyData` - Company/user input data storage
+- `consumptionData` - API consumption results storage
+- `productData` - Portfolio data from Excel
+- `currentStep` - Current quiz step tracker
+- `selectedProducts` - Selected product categories
+- `selectedPublicTypes` - Selected public types
+- `selectedBathroomSegment` - Selected bathroom segment
+
+**2. Data Loading & API Calls**
+- `loadProductData()` - Fetch portfolio data from `/api_portfolio_data`
+- `loadReferencesForProduct(producto)` - Fetch product references from `/api_get_referencias`
+- `calculateConsumption(segment, trafficLevel, totalEmployees)` - POST to `/api_consultor_integral`
+- `recalcularConsumo(producto, fromReferenceClick, btnEl)` - POST to `/api_recalcular_consumo`
+- `saveReporte()` - POST to `/save_portfolio`
+
+**3. UI Initialization & Rendering**
+- `initializeStepsList()` - Create sidebar step items
+- `renderStep()` - Render current step content
+- `updateProgress()` - Update progress indicators
+- `updateStepsList()` - Update sidebar step states (active/completed)
+
+**4. Step Navigation & Validation**
+- `nextStep()` - Move to next step with validation
+- `previousStep()` - Move to previous step
+- `validateStep()` - Validate current step input
+- `startQuiz()` - Reset and restart quiz
+
+**5. Event Handlers**
+- `attachEventListeners()` - Attach all event listeners for current step
+- `handleReferenceClick(referenceText, productName)` - Reference button click handler
+- `handleDispenserClick(dispenserText, productName)` - Dispenser button click handler
+
+**6. Form Input Management**
+- `updateProporcionInputs()` - Show/hide proportion inputs based on public type selection
+- `updateTotalPorcentaje()` - Calculate and validate percentage totals
+- `validateDemographicsStep()` - Enable/disable next button based on demographics input
+
+**7. Business Logic & Calculations**
+- `determineTrafficLevel(numEmployees, diasLaborales, horasLaborales)` - Calculate traffic level
+- `determineSegment(sector, size, tiposPublico)` - Determine recommended segment (currently unused)
+
+**8. Results Generation & Display**
+- `generateRecommendations()` - Trigger recommendation generation
+- `displayRecommendationsWithConsumption(segment, trafficLevel, consumptionData)` - Render final recommendations
+- `displaySelected(producto)` - Move recommended reference to first position (legacy)
+
+**9. UI Updates & Image Management**
+- `updateReferenceImage(productName, referenceText)` - Update reference product image
+- `updateDispenserImage(productName, dispenserText)` - Update dispenser image
+
+**10. PDF Generation**
+- `generatePDF()` - Generate PDF report using html2canvas and jsPDF
+
+**11. Configuration & Constants**
+- `steps[]` - Array of step definitions with content, titles, descriptions
+
+**12. Initialization**
+- `DOMContentLoaded` event listener - Load product data and start quiz
+
+### Proposed Refactored Structure
+
+```
+/static/js/consultor-integral/
+├── config.js              # steps[] definition, constants, API endpoints
+├── state.js               # Data management (companyData, productData, etc.)
+├── api.js                 # All API calls (fetch wrappers)
+├── validation.js          # All validation functions
+├── navigation.js          # Step navigation & progress tracking
+├── ui-renderer.js         # UI rendering functions (renderStep, updateStepsList)
+├── event-handlers.js      # Event listener attachment & handlers
+├── business-logic.js      # Traffic level, segment determination
+├── recommendations.js     # Recommendation generation & display
+├── pdf-generator.js       # PDF generation functionality
+├── image-manager.js       # Image update functions
+└── main.js                # Initialization & orchestration
+```
+
+### Benefits of Refactoring
+- **Maintainability**: Each file has a single responsibility
+- **Testability**: Functions are isolated and easier to unit test
+- **Organization**: Related functions grouped together logically
+- **Reusability**: Functions can be imported where needed
+- **Debugging**: Easier to locate and fix bugs in specific modules
+- **Collaboration**: Multiple developers can work on different modules simultaneously
+
+### Implementation Notes
+- Use ES6 modules (`import`/`export`)
+- Consider using a build tool (Webpack, Vite) for bundling
+- Maintain backward compatibility during migration
+- Add JSDoc comments for better IDE support
+- Consider TypeScript for type safety (optional)
