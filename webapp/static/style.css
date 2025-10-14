@@ -1,5 +1,12 @@
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url('/static/HelveticaNeue-Roman.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
   body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             padding-top: 80px; /* Ajuste para navbar fija */
         }
         .logo {

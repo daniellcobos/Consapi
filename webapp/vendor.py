@@ -31,7 +31,7 @@ def chatbot_proxy():
                 'Authorization': f'Bearer {api_key}'
             },
             json=chat_data,
-            timeout=30
+            timeout=60
         )
         
         # Return the response to frontend
@@ -41,8 +41,10 @@ def chatbot_proxy():
             return jsonify({"error": "Failed to get response from chatbot"}), response.status_code
             
     except requests.exceptions.RequestException as e:
+        print(e)
         return jsonify({"error": "Network error occurred"}), 500
     except Exception as e:
+        print(e)
         return jsonify({"error": "Internal server error"}), 500
 
 @bp.route('/consultor-integral')

@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url('/static/HelveticaNeue-Roman.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -232,7 +239,7 @@ h1 {
 }
 
 .option-button {
-    background: #0070C0;
+    background: #00853F;
     color: white;
     padding: 16px 24px;
     border: none;
@@ -241,7 +248,7 @@ h1 {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 112, 192, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 133, 63, 0.2);
     position: relative;
     overflow: hidden;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -249,8 +256,8 @@ h1 {
 
 
 .option-button:hover {
-    background: #00853F;
-    box-shadow: 0 4px 12px rgba(0, 133, 63, 0.3);
+    background: #0070C0;
+    box-shadow: 0 4px 12px rgba(0, 112, 192, 0.3);
 }
 
 
@@ -279,24 +286,25 @@ h1 {
 }
 
 .btn-prev {
-    background: #0070C0;
+    background: #00853F;
     color: white;
-    box-shadow: 0 8px 25px rgba(0, 112, 192, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 133, 63, 0.3);
 }
 
 .btn-prev:hover {
+    background: #0070C0;
     transform: translateY(-2px);
     box-shadow: 0 12px 30px rgba(0, 112, 192, 0.4);
 }
 
 .btn-next {
-    background: #0070C0;
+    background: #00853F;
     color: white;
-    box-shadow: 0 2px 8px rgba(0, 112, 192, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 133, 63, 0.2);
 }
 
 .btn-next:hover {
-    background: #005A9A;
+    background: #0070C0;
     box-shadow: 0 4px 12px rgba(0, 112, 192, 0.3);
 }
 
@@ -470,7 +478,7 @@ h1 {
 }
 
 .recalculate-btn {
-    background: #f59e0b;
+    background: #00853F;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -479,12 +487,13 @@ h1 {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 133, 63, 0.3);
 }
 
 .recalculate-btn:hover {
+    background: #0070C0;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 112, 192, 0.4);
 }
 
 .calculating {
@@ -1338,6 +1347,12 @@ img {
 select.reference-select {
     width: 100% !important;
     box-sizing: border-box;
+}
+
+/* Override Selectize selected item color */
+.selectize-dropdown .selected {
+    background-color: #00853F !important;
+    color: white !important;
 }
 
 /* Diseño responsivo para la grilla de recomendaciones */
