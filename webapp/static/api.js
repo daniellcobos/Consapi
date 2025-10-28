@@ -1,7 +1,33 @@
 /**
  * api.js
+ * Gestión de comunicación con el backend para Consultor Integral.
+ *
+ * DESCRIPCIÓN:
+ * Maneja todas las llamadas HTTP al backend de Flask, incluyendo cálculos de consumo,
+ * recálculos de productos específicos, y guardado de portafolios. Procesa las respuestas
+ * del servidor y actualiza el estado de la aplicación.
+ *
+ * ENDPOINTS UTILIZADOS:
+ * - /api_consultor_integral: Cálculo de consumo para todos los productos seleccionados
+ * - /api_recalcular_consumo: Recálculo cuando el usuario cambia la referencia
+ * - /save_portfolio: Guarda el reporte generado en la base de datos
+ * - /api_get_referencias: Obtiene referencias disponibles para un producto
+ *
+ * FUNCIONES PRINCIPALES:
+ * - calculateConsumption(): Calcula consumo mensual de todos los productos
+ * - recalcularConsumo(): Recalcula consumo al cambiar referencia de producto
+ * - saveReporte(): Guarda los resultados en la base de datos
+ *
+ * DATOS ENVIADOS:
+ * - Información de la empresa (sector, tamaño, empleados, jornada)
+ * - Productos y referencias seleccionadas
+ * - Proporciones de tipos de público (si aplica)
+ *
  * Handles all API communication for Consultor Integral
  */
+
+import { getState, setConsumptionData, updateCompanyData } from './state.js';
+import { determineTrafficLevel } from './Portfolio.js';
 
 /**
  * Calculate consumption for all selected products
@@ -9,22 +35,23 @@
  * @param {string} trafficLevel - Traffic level
  * @param {number} totalEmployees - Total employees
  */
-async function calculateConsumption(segment, trafficLevel, totalEmployees) {
+export async function calculateConsumption(segment, trafficLevel, totalEmployees) {
+    const state = getState();
+    const { companyData, productData } = state;
+
     try {
-        // Preparar referencias seleccionadas para cada producto
+        // Prepare selected references for each product
         const referencias = {};
         const selectedReferences = {}; // Store the specific reference chosen for each product
 
         companyData.products.forEach(product => {
             // Safely access recommendation with null checks
-            const recommendation = productData[product] && productData[product][segment] && productData[product][segment][trafficLevel]
-                ? productData[product][segment][trafficLevel]
-                : null;
+            const recommendation = productData[product]?.[segment]?.[trafficLevel];
             let productReferences = [];
 
             if (recommendation) {
                 if (Array.isArray(recommendation) && recommendation.length > 0) {
-                    productReferences = recommendation[0].referencias;
+                    productReferences = recommendation[0].referencias || [];
                 } else if (recommendation.referencias) {
                     productReferences = recommendation.referencias;
                 }
@@ -42,7 +69,7 @@ async function calculateConsumption(segment, trafficLevel, totalEmployees) {
         });
 
         // Store selected references for UI updates
-        companyData.selectedReferences = selectedReferences;
+        updateCompanyData({ selectedReferences });
 
         const requestData = {
             numMujeres: companyData.numMujeres,
@@ -53,8 +80,8 @@ async function calculateConsumption(segment, trafficLevel, totalEmployees) {
             sector: companyData.sector,
             productos: companyData.products,
             referencias: selectedReferences, // Use specific selected references instead of arrays
-            proporciones: companyData.proporciones || {}, // Incluir proporciones si existen
-            numVisitantes: companyData.numVisitantes || 0 // Incluir número de visitantes si existe
+            proporciones: companyData.proporciones || {}, // Include proportions if they exist
+            numVisitantes: companyData.numVisitantes || 0 // Include number of visitors if it exists
         };
 
         const response = await fetch('/api_consultor_integral', {
@@ -69,11 +96,18 @@ async function calculateConsumption(segment, trafficLevel, totalEmployees) {
             throw new Error('Error en el cálculo de consumo');
         }
 
-        consumptionData = await response.json();
+        const consumptionData = await response.json();
+        setConsumptionData(consumptionData);
+
+        // Import dynamically to avoid circular dependency
+        const { displayRecommendationsWithConsumption } = await import('./Portfolio.js');
         displayRecommendationsWithConsumption(segment, trafficLevel, consumptionData);
 
     } catch (error) {
         console.error('Error calculando consumo:', error);
+
+        // Import dynamically to avoid circular dependency
+        const { displayRecommendationsWithConsumption } = await import('./Portfolio.js');
         displayRecommendationsWithConsumption(segment, trafficLevel, {});
     }
 }
@@ -84,7 +118,10 @@ async function calculateConsumption(segment, trafficLevel, totalEmployees) {
  * @param {boolean} fromReferenceClick - Whether triggered by reference button click
  * @param {HTMLElement} btnEl - Button element to show loading state
  */
-async function recalcularConsumo(producto, fromReferenceClick = false, btnEl = null) {
+export async function recalcularConsumo(producto, fromReferenceClick = false, btnEl = null) {
+    const state = getState();
+    const { companyData } = state;
+
     const selectId = `ref-${producto.replace(/\s/g, '-')}`;
     const consumoId = `consumo-${producto.replace(/\s/g, '-')}`;
     const select = document.getElementById(selectId);
@@ -93,7 +130,7 @@ async function recalcularConsumo(producto, fromReferenceClick = false, btnEl = n
 
     const nuevaReferencia = select.value;
 
-    // Estado de carga SOLO si vino de botón (no de click en referencia)
+    // Loading state ONLY if it came from button (not from reference click)
     if (!fromReferenceClick && btnEl) {
         btnEl.disabled = true;
         btnEl.innerHTML = '⏳ Calculando...';
@@ -111,8 +148,8 @@ async function recalcularConsumo(producto, fromReferenceClick = false, btnEl = n
             sector: companyData.sector,
             producto: producto,
             referencia: nuevaReferencia,
-            proporciones: companyData.proporciones || {}, // Incluir proporciones si existen
-            numVisitantes: companyData.numVisitantes || 0 // Incluir número de visitantes si existe
+            proporciones: companyData.proporciones || {}, // Include proportions if they exist
+            numVisitantes: companyData.numVisitantes || 0 // Include number of visitors if it exists
         };
 
         const response = await fetch('/api_recalcular_consumo', {
@@ -172,6 +209,7 @@ async function recalcularConsumo(producto, fromReferenceClick = false, btnEl = n
                         productHeading.parentNode.insertBefore(newImageGrid, productHeading.nextSibling);
                     } else {
                         // Update existing image
+                        const { updateReferenceImage } = await import('./ui-handlers.js');
                         updateReferenceImage(producto, referenceNumber);
                     }
                 }
@@ -195,7 +233,10 @@ async function recalcularConsumo(producto, fromReferenceClick = false, btnEl = n
 /**
  * Save the portfolio report to the database
  */
-async function saveReporte() {
+export async function saveReporte() {
+    const state = getState();
+    const { companyData, consumptionData } = state;
+
     try {
         // Prepare portfolio data
         const portfolioData = {
@@ -214,7 +255,7 @@ async function saveReporte() {
         };
 
         // Extract product data if available
-        if (typeof consumptionData !== 'undefined' && Object.keys(consumptionData).length > 0) {
+        if (consumptionData && Object.keys(consumptionData).length > 0) {
             Object.keys(consumptionData).forEach(producto => {
                 const productData = consumptionData[producto];
                 const selectElement = document.getElementById(`ref-${producto.replace(/\s/g, '-')}`);
@@ -245,6 +286,7 @@ async function saveReporte() {
 
         if (response.ok) {
             const result = await response.text();
+            console.log('Portfolio saved successfully');
         } else {
             console.error('Error guardando portfolio:', response.status);
         }

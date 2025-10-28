@@ -59,12 +59,7 @@
         </div>
     </div>
 
-    <!-- External JavaScript Modules -->
-    <script src="{{ url_for('static', filename='config.js') }}"></script>
-    <script src="{{ url_for('static', filename='Portfolio.js') }}"></script>
-    <script src="{{ url_for('static', filename='Steps.js') }}"></script>
-    <script src="{{ url_for('static', filename='validation.js') }}"></script>
-    <script src="{{ url_for('static', filename='api.js') }}"></script>
-    <script src="{{ url_for('static', filename='ui-handlers.js') }}"></script>
+    <!-- Main JavaScript Module Entry Point -->
+    <script type="module" src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>

@@ -1,14 +1,42 @@
 /**
  * ui-handlers.js
+ * Manejo de interacciones UI, actualización de imágenes y generación de PDF.
+ *
+ * DESCRIPCIÓN:
+ * Gestiona las interacciones del usuario con elementos de la interfaz como selección
+ * de referencias y dispensadores, actualización dinámica de imágenes de productos,
+ * y generación de reportes en formato PDF usando html2canvas y jsPDF.
+ *
+ * FUNCIONES PRINCIPALES:
+ * - handleReferenceClick(): Maneja clic en botón de referencia de producto
+ * - handleDispenserClick(): Maneja clic en botón de dispensador
+ * - updateReferenceImage(): Actualiza imagen de referencia seleccionada
+ * - updateDispenserImage(): Actualiza imagen de dispensador seleccionado
+ * - generatePDF(): Genera y descarga reporte en PDF
+ *
+ * INTEGRACIONES:
+ * - Selectize: Plugin para dropdowns de referencias con búsqueda
+ * - html2canvas: Convierte HTML a imagen para PDF
+ * - jsPDF: Genera archivo PDF desde imágenes
+ *
+ * RESPONSABILIDADES:
+ * - Sincronizar selección de botones con dropdowns de Selectize
+ * - Cargar y mostrar imágenes de productos desde /static/images/
+ * - Manejar errores cuando imágenes no están disponibles
+ * - Capturar contenido HTML y convertirlo a PDF multipágina
+ *
  * Handles UI interactions, image updates, and PDF generation for Consultor Integral
  */
+
+import { getState } from './state.js';
+import { recalcularConsumo, saveReporte } from './api.js';
 
 /**
  * Update reference image when a reference is selected
  * @param {string} productName - Product name
  * @param {string} referenceText - Reference number
  */
-function updateReferenceImage(productName, referenceText) {
+export function updateReferenceImage(productName, referenceText) {
     // Find all reference image containers for this product
     const productHeading = Array.from(document.querySelectorAll('h3')).find(h => h.textContent.includes(`${productName}`));
     if (productHeading) {
@@ -44,7 +72,7 @@ function updateReferenceImage(productName, referenceText) {
  * @param {string} productName - Product name
  * @param {string} dispenserText - Dispenser number
  */
-function updateDispenserImage(productName, dispenserText) {
+export function updateDispenserImage(productName, dispenserText) {
     // Find all dispenser image containers for this product
     const productHeading = Array.from(document.querySelectorAll('h3')).find(h => h.textContent.includes(`${productName}`));
     if (productHeading) {
@@ -59,7 +87,7 @@ function updateDispenserImage(productName, dispenserText) {
                     heading.textContent = `Dispensador Seleccionado: ${dispenserText}`;
                 }
 
-                // Update the image (using placeholder for now)
+                // Update the image
                 const img = dispenserContainer.querySelector('img');
                 const fallback = dispenserContainer.querySelector('div[style*="display: none"]');
                 if (img && fallback) {
@@ -80,7 +108,7 @@ function updateDispenserImage(productName, dispenserText) {
  * @param {string} referenceText - Reference number
  * @param {string} productName - Product name
  */
-function handleReferenceClick(referenceText, productName) {
+export function handleReferenceClick(referenceText, productName) {
     // Find the corresponding select element
     const selectId = `ref-${productName.replace(/\s/g, '-')}`;
     const selectElement = document.getElementById(selectId);
@@ -119,7 +147,6 @@ function handleReferenceClick(referenceText, productName) {
             }
         } else {
             // Fallback to native select if Selectize not initialized
-
             let foundOption = false;
 
             // First try exact match
@@ -157,7 +184,7 @@ function handleReferenceClick(referenceText, productName) {
  * @param {string} dispenserText - Dispenser number
  * @param {string} productName - Product name
  */
-function handleDispenserClick(dispenserText, productName) {
+export function handleDispenserClick(dispenserText, productName) {
     // Update the dispenser image
     updateDispenserImage(productName, dispenserText);
 }
@@ -165,17 +192,25 @@ function handleDispenserClick(dispenserText, productName) {
 /**
  * Generate PDF report from the recommendations
  */
-function generatePDF() {
+export function generatePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
     const element = document.getElementById('report-content');
+    const state = getState();
+    const { companyData } = state;
 
     // Call saveReporte before generating PDF
     saveReporte();
 
-    // Ocultar botones de navegación antes de la captura
+    // Hide navigation buttons before capture
     const navButtons = document.querySelector('.navigation-buttons');
     navButtons.style.display = 'none';
+
+    // Show disclaimer only for PDF
+    const disclaimer = document.getElementById('pdf-disclaimer');
+    if (disclaimer) {
+        disclaimer.style.display = 'block';
+    }
 
     html2canvas(element, { scale: 2 }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
@@ -199,16 +234,12 @@ function generatePDF() {
         const filename = `Reporte_${companyData.sector.replace(/\s/g, '_')}.pdf`;
         doc.save(filename);
 
-        // Mostrar botones de navegación de nuevo
+        // Hide disclaimer again after PDF is generated
+        if (disclaimer) {
+            disclaimer.style.display = 'none';
+        }
+
+        // Show navigation buttons again
         navButtons.style.display = 'flex';
     });
 }
-
-/**
- * Initialize the application when DOM is ready
- */
-document.addEventListener('DOMContentLoaded', async function() {
-    // Load product data from Portfolio.xlsx before starting the quiz
-    await loadProductData();
-    startQuiz();
-});

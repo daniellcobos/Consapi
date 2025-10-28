@@ -1,6 +1,7 @@
 from flask import Flask,render_template,request,session,redirect,url_for
 from os import path
 import pandas as pd
+import logging
 from webapp import auth
 from webapp import vendor
 from webapp.sqla import sqla
@@ -9,30 +10,23 @@ from flask_login import current_user, login_required
 from webapp.models.portafolio import Portafolio
 import config
 from flask_cors import CORS
+from webapp.logger_config import setup_logger
 
 app = Flask(__name__)
 app.config.from_object(config.config['development'])
 login_manager.init_app(app)
 sqla.init_app(app)
-CORS(app, origins = ['https://project-b2b-edexa.vercel.app','https://ptools.synapsis-rs.com/','https://www.edexa.com.co','www.edexa.com.co'],methods=['POST', 'GET', 'OPTIONS'])
+setup_logger(app)
+CORS(app, origins = ['https://ptools.synapsis-rs.com/'],methods=['POST', 'GET', 'OPTIONS'])
 app.register_blueprint(auth.bp)
 app.register_blueprint(vendor.bp)
 parameterspath =  path.join(app.root_path,'static','ParametrosSimulador.xlsx')
 
+# Initialize portfolio logger
+portfolio_logger = logging.getLogger('portfolio_activity')
 
-@app.route('/')
-@login_required
-def index():  # put application's code here
-    #read excel parameters
-    apikey = 'asdklfLCJKVLvnclklskhdW09232dkja92235adj'
-    parametros = pd.read_excel(parameterspath, sheet_name='Parametros')
-    tplist = parametros["Ref_Papel"].dropna().tolist()
-    htlist = parametros["Ref_Toallas"].dropna().tolist()
-    slist = parametros["Ref_Jabon"].dropna().tolist()
-    srlist = parametros["Ref_Servilletas"].dropna().tolist()
-    lmlist = parametros["Ref_Limpiones"].dropna().tolist()
-    print(parametros)
-    return render_template("apitest.html", tplist=tplist,srlist=srlist, htlist = htlist, slist = slist, lmlist = lmlist, apikey = apikey)
+
+
 
 
 def calculoconsumo(tlhombres,tlmujeres,pc,rc,cat,tipoPublico,sector,tipos,skuprod):
@@ -138,6 +132,9 @@ def apitest():  # put application's code here
 
         return {'consumoph':consmensualph, "consumolm":consmensuallm, 'consumotoallas':consmensualth, 'consumoserv':consmensualsr,
                 'consumojabon':consmensualj }
+    else:
+        return 'No Autorizado'
+
 
 @app.route('/api_refs', methods = ['GET'])
 def get_api_refs():
@@ -155,7 +152,7 @@ def get_api_refs():
     return {"tplist":tplist,"htlist":htlist,"slist":slist,"lmlist":lmlist,"srlist":srlist}
 
 @app.route('/guia')
-@login_required
+
 def guia():  # put application's code here
     #read excel parameters
     return render_template("guia.html")
@@ -166,15 +163,13 @@ def segmentacion():  # put application's code here
     #read excel parameters
     return render_template("segmentacion.html")
 
-@app.route('/consultor-integral')
+@app.route('/')
 @login_required
 def consultor_integral():
-    if session['Username'] == 'edexa':
-        return redirect(url_for('index'))
     return render_template("consultor_integral.html")
 
 @app.route('/api_consultor_integral', methods=['POST'])
-@login_required
+
 def api_consultor_integral():
     import random
     
@@ -284,7 +279,7 @@ def api_consultor_integral():
     return resultados
 
 @app.route('/api_get_referencias', methods=['POST'])
-@login_required
+
 def get_referencias():
     data = request.json
     producto = data.get('producto')
@@ -303,7 +298,7 @@ def get_referencias():
     return {'referencias': referencias}
 
 @app.route('/api_recalcular_consumo', methods=['POST'])
-@login_required
+
 def recalcular_consumo():
     import random
     
@@ -621,13 +616,24 @@ def save_portfolio(portfolio):
             reftoallas=portfolio.get('reftoallas'),
             constoallas=portfolio.get('constoallas')
         )
-        
+
         # Add to database session and commit
         sqla.session.add(new_portfolio)
         sqla.session.commit()
-        
+
+        # Log portfolio creation
+        ip_address = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+        user_email = session.get('Username', 'Unknown')
+        portfolio_logger.info(
+            f"PORTFOLIO CREADO - Usuario: {user_email} | IP: {ip_address} | "
+            f"ID: {new_portfolio.id} | Sector: {portfolio.get('sector')} | "
+            f"Productos: Papel={portfolio.get('refpapel')}, "
+            f"Jabones={portfolio.get('refjabones')}, "
+            f"Toallas={portfolio.get('reftoallas')}"
+        )
+
         return {'success': True, 'id': new_portfolio.id}
-        
+
     except Exception as e:
         sqla.session.rollback()
         return {'success': False, 'error': str(e)}

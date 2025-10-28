@@ -1,90 +1,108 @@
-    <head>
+{% block header %}
+  <title>{% block title %}Registro{% endblock %}</title>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Helvetica+Neue:300,400,500,700">
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-          <style>
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: #CDEBFE;
-        }
-        nav {
-            width: 100%;
-            padding: 3px;
-            box-shadow: 1px 1px 5px #80808057;
-            background-color: white !important;
-        }
-        .text-tork {
-            color: #00205b;
-        }
-        .btn-tork {
-            background-color: #00205b;
-            color: white;
-            border: none;
-        }
-        .btn-tork:hover {
-            background-color: #00853F;
-            color: white;
-        }
-        .container {
-            background-color: white;
-            border: 2px solid #00205b;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        .form-control {
-            border: 1px solid #00205b;
-        }
-    </style>
-    </head>
+  <!-- Viewport para móviles -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <body>
-    <nav class="bg-white border-gray-200">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <a href="#" class="flex items-center">
-                <img src="{{ url_for('static', filename='images/tork_think-ahead_vertical.png') }}" class="h-8 mr-3"
-                    alt="Tork Logo" />
-                <span class="self-center text-2xl font-semibold whitespace-nowrap text-tork">Plataforma CE</span>
-            </a>
-        </div>
-    </nav>
-     <div class="container jumbotron m-1">
-    <h1 class="text-tork"> Registre Usuarios </h1>
-    </div>
-    <div class="container m-1" id="maincontainer">
-      <form method="post">
-          <div  class="form-group" >
-          <label for="username" class="text-tork">Email</label>
-    <input class="form-control"  name="username" id="username" required>
+  <!-- Tipografía -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Helvetica+Neue:300,400,500,700">
+
+  <!-- Bootstrap 5.2.3 (CDN correcto con integrity) -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+    crossorigin="anonymous"
+  >
+
+  <!-- Tu hoja de estilos (auth.css con ajustes responsivos) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+
+  <!-- Librerías extra -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Estilos visuales propios -->
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #CDEBFE;
+    }
+    .card { border: 2px solid #00205b !important; }
+    .btn-tork { background-color: #00205b; color: white; border: none; }
+    .btn-tork:hover { background-color: #00853F; color: white; }
+    .text-tork { color: #00205b; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-9 col-lg-12 col-xl-10">
+        <div class="card shadow-lg o-hidden border-0 my-5">
+          <div class="card-body p-0">
+            <div class="row g-0">
+
+              <!-- Columna izquierda: logo Tork (visible en pantallas grandes) -->
+              <div class="col-lg-6 d-none d-lg-flex"
+                   style="display:flex; align-items:center; justify-content:center; background-color:white; padding:20px;">
+                <div class="flex-grow-1 bg-login-image"
+                     style="background-image:url({{ url_for('static', filename='images/tork_think-ahead_vertical.png') }}); max-width:250px; margin-left:auto; background-repeat:no-repeat; background-size:contain; background-position:center; margin-right:auto; height:200px;">
+                </div>
+              </div>
+
+              <!-- Columna derecha: formulario -->
+              <div class="col-lg-6" style="background-color: white;">
+                <div class="p-5 w-100">
+
+                  <!-- Logo Tork visible SOLO en móviles -->
+                  <div class="d-flex d-lg-none justify-content-center mb-3">
+                    <img
+                      src="{{ url_for('static', filename='images/tork_think-ahead_vertical.png') }}"
+                      alt="Tork"
+                      style="max-width: 150px; height: auto;"
+                    >
+                  </div>
+
+                  <div class="text-center">
+                    <h3 class="text-tork mb-4">Plataforma Calculo CE </h3>
+                    <h5 class="text-tork mb-4">Registro de Usuario</h5>
+                    <p class="text-muted small">Solo necesitas tu número de identificación para registrarte y acceder</p>
+                  </div>
+
+                  <form method="post">
+                    <label for="numero_identificacion" class="text-tork">Número de Identificación</label>
+                    <input class="form-control form-control-user mb-3"
+                           type="text" id="numero_identificacion" name="numero_identificacion"
+                           placeholder="Ingresa tu número de identificación" aria-describedby="idHelp" required
+                           pattern="[0-9\s\-]{5,30}" minlength="5" maxlength="30"
+                           style="border: 1px solid #00205b;">
+                    <small class="form-text text-muted">Ingresa tu número de identificación (entre 5 y 30 dígitos), sin comas,puntos o guiones</small>
+
+                    <hr>
+                    <button class="btn btn-tork d-block btn-user w-100" type="submit">Registrarse</button>
+                  </form>
+
+                  <a href="{{ url_for('auth.login') }}" class="btn btn-success d-block btn-user w-100 mt-3" style="background-color: #00853F; border: none;">
+                    Ya tengo cuenta - Ingresar
+                  </a>
+
+                  {% if message %}
+                    <div class="alert alert-danger mt-3" role="alert">{{ message }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div><!-- /.row -->
+          </div><!-- /.card-body -->
+
+          <center>
+            <h7 class="text-tork">©2023. All rights reserved. | AppWeb Design by Synapsis Research</h7>
+          </center>
+        </div><!-- /.card -->
       </div>
-    <div  class="form-group">
-        <label for="password" class="text-tork"> Contraseña </label>
-    <input  class="form-control" type="password" name="password" id="password" required>
     </div>
-
-
-<div class="form-group" >
-<hr>
-          <input class="btn btn-tork" type="submit" value="Registrarse">
-</div>
-  </form>
-    </div>
-    </body>
-
-
-
-    <script>
-    const options = ['Synapsis']
-    const cliente = document.getElementById("cliente")
-for (const o of options) {
-    const option = document.createElement("option")
-    option.value = o
-    option.innerText = o
-    option.style.fontFamily = 'Century Gothic', 'Futura', 'Didact Gothic'
-    cliente.appendChild(option)
-}
-    </script>
+  </div>
+</body>
+{% endblock %}
 

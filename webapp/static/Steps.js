@@ -1,8 +1,33 @@
 /**
- * UserInterface.js
+ * Steps.js
+ * Renderizado de interfaz y navegación del cuestionario para Consultor Integral.
+ *
+ * DESCRIPCIÓN:
+ * Maneja la lógica de navegación del wizard multi-paso, renderiza el contenido de cada
+ * paso, actualiza la barra de progreso, y coordina la transición entre pasos validando
+ * los datos ingresados por el usuario.
+ *
+ * FUNCIONES PRINCIPALES:
+ * - renderStep(): Renderiza el contenido del paso actual con botones de navegación
+ * - nextStep(): Avanza al siguiente paso (con validación)
+ * - previousStep(): Retrocede al paso anterior
+ * - startQuiz(): Reinicia el cuestionario desde el inicio
+ * - updateProgress(): Actualiza indicadores visuales de progreso
+ *
+ * RESPONSABILIDADES:
+ * - Renderizar HTML de cada paso usando templates de config.js
+ * - Validar datos antes de permitir avanzar
+ * - Actualizar clases CSS para indicar paso activo/completado
+ * - Generar botones con atributos data-action para event delegation
+ * - Manejar scroll en dispositivos móviles
+ *
  * Handles UI rendering and navigation for Consultor Integral
- * Combines navigation.js and ui-renderer.js functionality
  */
+
+import { getState, getCurrentStep, setCurrentStep, resetState } from './state.js';
+import { steps } from './config.js';
+import { validateStep } from './validation.js';
+import { generateRecommendations } from './Portfolio.js';
 
 // ============================================================================
 // UI INITIALIZATION & RENDERING
@@ -12,7 +37,7 @@
  * Initialize the steps list in the sidebar
  * Creates step items dynamically from the steps array
  */
-function initializeStepsList() {
+export function initializeStepsList() {
     const container = document.getElementById('steps-list');
     container.innerHTML = '';
 
@@ -38,32 +63,34 @@ function initializeStepsList() {
  * Update the visual state of steps in the sidebar
  * Marks steps as active, completed, or pending
  */
-function updateStepsList() {
+export function updateStepsList() {
+    const currentStep = getCurrentStep();
+
     steps.forEach((step, index) => {
         const stepItem = document.getElementById(`step-item-${index}`);
 
-        // Reiniciar clases
+        // Reset classes
         stepItem.className = 'step-item';
 
         if (index < currentStep) {
-            // Paso completado
+            // Completed step
             stepItem.classList.add('completed');
         } else if (index === currentStep) {
-            // Paso activo
+            // Active step
             stepItem.classList.add('active');
-        } else {
-            // Paso futuro - mantener estilo por defecto
         }
+        // Future steps keep default style
     });
 }
 
 /**
  * Update progress indicators (sidebar and header)
  */
-function updateProgress() {
+export function updateProgress() {
     updateStepsList();
 
-    // Actualizar encabezado de contenido
+    // Update content header
+    const currentStep = getCurrentStep();
     const step = steps[currentStep];
     document.getElementById('current-step-title').textContent = step.title;
     document.getElementById('progress-info').textContent = `Paso ${currentStep + 1} de ${steps.length}`;
@@ -73,24 +100,29 @@ function updateProgress() {
  * Render the current step content
  * Main rendering function that displays step content and navigation buttons
  */
-function renderStep() {
+export function renderStep() {
+    const currentStep = getCurrentStep();
     const step = steps[currentStep];
     const container = document.getElementById('quiz-container');
 
     container.innerHTML = `
         ${step.content}
         <div class="navigation-buttons">
-            <button class="nav-button btn-prev" onclick="previousStep()" ${currentStep === 0 ? 'style="visibility: hidden;"' : ''}>
+            <button class="nav-button btn-prev" data-action="prev-step" ${currentStep === 0 ? 'style="visibility: hidden;"' : ''}>
                 Anterior
             </button>
-            <button class="nav-button btn-next" onclick="nextStep()" id="next-btn">
+            <button class="nav-button btn-next" data-action="next-step" id="next-btn">
                 ${currentStep === steps.length - 1 ? 'Generar Recomendaciones' : 'Siguiente'}
             </button>
         </div>
     `;
 
     updateProgress();
-    attachEventListeners();
+
+    // Import and attach event listeners dynamically
+    import('./validation.js').then(module => {
+        module.attachEventListeners();
+    });
 
     // Scroll to current step title on mobile
     if (window.innerWidth <= 768) {
@@ -109,14 +141,15 @@ function renderStep() {
  * Navigate to the next step
  * Validates current step before proceeding
  */
-function nextStep() {
+export function nextStep() {
     if (!validateStep()) {
         alert('Por favor, complete todos los campos requeridos.');
         return;
     }
 
+    const currentStep = getCurrentStep();
     if (currentStep < steps.length - 1) {
-        currentStep++;
+        setCurrentStep(currentStep + 1);
         renderStep();
     } else {
         generateRecommendations();
@@ -126,9 +159,10 @@ function nextStep() {
 /**
  * Navigate to the previous step
  */
-function previousStep() {
+export function previousStep() {
+    const currentStep = getCurrentStep();
     if (currentStep > 0) {
-        currentStep--;
+        setCurrentStep(currentStep - 1);
         renderStep();
     }
 }
@@ -136,12 +170,8 @@ function previousStep() {
 /**
  * Reset and restart the quiz from the beginning
  */
-function startQuiz() {
-    currentStep = 0;
-    companyData = {};
-    selectedProducts = [];
-    selectedPublicTypes = [];
-    selectedBathroomSegment = '';
+export function startQuiz() {
+    resetState();
     initializeStepsList();
     renderStep();
 }

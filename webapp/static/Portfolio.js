@@ -1,25 +1,29 @@
 /**
  * Portfolio.js
- * Handles configuration, state, business logic, and recommendations for Consultor Integral
- * Consolidates: config.js, state.js, business-logic.js, and recommendations.js
+ * Gestión de datos, lógica de negocio y recomendaciones para Consultor Integral.
+ *
+ * DESCRIPCIÓN:
+ * Maneja la carga de datos desde Portfolio.xlsx, implementa la lógica de negocio
+ * para determinar niveles de tráfico y segmentos, y genera las recomendaciones
+ * personalizadas de productos basadas en las necesidades del cliente.
+ *
+ * FUNCIONES PRINCIPALES:
+ * - loadProductData(): Carga datos de productos desde el archivo Excel
+ * - determineTrafficLevel(): Calcula nivel de tráfico (Bajo/Medio/Alto/Pico)
+ * - generateRecommendations(): Genera recomendaciones personalizadas
+ * - displayRecommendationsWithConsumption(): Muestra resultados con consumo mensual
+ * - loadReferencesForProduct(): Carga referencias disponibles para cada producto
+ *
+ * DATOS MANEJADOS:
+ * - Referencias de productos por categoría (papel, toallas, jabón, servilletas, limpiones)
+ * - Precios y rendimientos por producto
+ * - Recomendaciones por segmento y nivel de tráfico
+ *
+ * Handles data loading, business logic, and recommendations for Consultor Integral
  */
 
-// ============================================================================
-// STATE MANAGEMENT
-// ============================================================================
-
-// Datos de la empresa del usuario
-let companyData = {};
-let consumptionData = {};
-
-// Datos de segmentación de productos (cargados dinámicamente desde Portfolio.xlsx)
-let productData = {};
-
-// Estado del cuestionario
-let currentStep = 0;
-let selectedProducts = [];
-let selectedPublicTypes = [];
-let selectedBathroomSegment = '';
+import { getState, updateCompanyData, setProductData } from './state.js';
+import { steps } from './config.js';
 
 // ============================================================================
 // DATA LOADING
@@ -27,28 +31,33 @@ let selectedBathroomSegment = '';
 
 /**
  * Load product data from Portfolio.xlsx via API
+ * @returns {Promise<void>}
  */
-async function loadProductData() {
+export async function loadProductData() {
     try {
         const response = await fetch('/api_portfolio_data');
         if (response.ok) {
-            productData = await response.json();
+            const data = await response.json();
+            setProductData(data);
         } else {
             console.error('Error loading portfolio data:', response.status);
-            // Volver a datos vacíos o mostrar error
-            productData = {};
+            setProductData({});
         }
     } catch (error) {
         console.error('Error fetching portfolio data:', error);
-        productData = {};
+        setProductData({});
     }
 }
 
 /**
  * Load product references for a specific product and populate dropdown
  * @param {string} producto - Product name
+ * @returns {Promise<void>}
  */
-async function loadReferencesForProduct(producto) {
+export async function loadReferencesForProduct(producto) {
+    const state = getState();
+    const { companyData, consumptionData, productData } = state;
+
     try {
         const response = await fetch('/api_get_referencias', {
             method: 'POST',
@@ -71,9 +80,7 @@ async function loadReferencesForProduct(producto) {
 
                 let recommendedRefs = [];
                 // Safely access recommendation with null checks
-                const recommendation = productData[producto] && productData[producto][segment] && productData[producto][segment][trafficLevel]
-                    ? productData[producto][segment][trafficLevel]
-                    : null;
+                const recommendation = productData[producto]?.[segment]?.[trafficLevel];
 
                 if (recommendation) {
                     if (Array.isArray(recommendation)) {
@@ -89,16 +96,14 @@ async function loadReferencesForProduct(producto) {
                 // Remove duplicates
                 recommendedRefs = [...new Set(recommendedRefs)];
 
-                // Limpiar opciones existentes excepto la primera (actual)
+                // Clear existing options
                 const currentValue = select.value;
                 select.innerHTML = '';
 
                 // Get the specific selected reference for this product
-                const selectedReference = companyData.selectedReferences && companyData.selectedReferences[producto]
-                    ? companyData.selectedReferences[producto]
-                    : (consumptionData[producto] && consumptionData[producto].referencia_usada
-                        ? consumptionData[producto].referencia_usada
-                        : null);
+                const selectedReference = companyData.selectedReferences?.[producto]
+                    ?? consumptionData[producto]?.referencia_usada
+                    ?? null;
 
                 // Sort references: selected reference first, then other recommended, then others
                 const sortedRefs = data.referencias.sort((a, b) => {
@@ -117,7 +122,7 @@ async function loadReferencesForProduct(producto) {
                     return 0;
                 });
 
-                // Añadir todas las referencias con highlighting
+                // Add all references with highlighting
                 sortedRefs.forEach(ref => {
                     const option = document.createElement('option');
                     option.value = ref;
@@ -139,19 +144,8 @@ async function loadReferencesForProduct(producto) {
                     searchField: ['text', 'value'],
                     maxItems: 1,
                     create: false,
-                    sortField: 'text',
-                    onChange: function(value) {
-                        // Update reference image when dropdown selection changes
-                        if (value) {
-                            const producto = this.$input.data('producto');
-                            if (producto) {
-                                // Extract just the reference number from the full value (in case it has description)
-                                const referenceMatch = value.match(/^(\d+)/);
-                                const referenceNumber = referenceMatch ? referenceMatch[1] : value;
-                                updateReferenceImage(producto, referenceNumber);
-                            }
-                        }
-                    }
+                    sortField: 'text'
+                    // Image update removed from onChange - now only updates when user clicks "Recalcular"
                 });
             }
         }
@@ -171,9 +165,7 @@ async function loadReferencesForProduct(producto) {
  * @param {number} horasLaborales - Working hours per day
  * @returns {string} Traffic level classification
  */
-function determineTrafficLevel(numEmployees, diasLaborales, horasLaborales) {
-    // Calcular intensidad de uso basada en empleados, días y horas laborales
-
+export function determineTrafficLevel(numEmployees, diasLaborales, horasLaborales) {
     // Factor de intensidad horaria (horas/día)
     let intensityFactor = 1;
     if (horasLaborales >= 16) {
@@ -218,7 +210,7 @@ function determineTrafficLevel(numEmployees, diasLaborales, horasLaborales) {
  * @param {Array|string} tiposPublico - Public types
  * @returns {string} Recommended segment
  */
-function determineSegment(sector, size, tiposPublico) {
+export function determineSegment(sector, size, tiposPublico) {
     // Lógica para determinar el segmento basado en sector, tamaño y tipos de público
     if (sector === 'Salud (Hospitales, Clínicas)') return 'Higiene Crítica';
     if (sector === 'HoReCa (Hoteles, Restaurantes, Cafeterías)') return 'Higiene Crítica';
@@ -244,7 +236,10 @@ function determineSegment(sector, size, tiposPublico) {
  * Generate recommendations based on company data
  * Initiates the recommendation process
  */
-function generateRecommendations() {
+export function generateRecommendations() {
+    const state = getState();
+    const { companyData, productData } = state;
+
     const totalEmployees = companyData.numMujeres + companyData.numHombres;
     const trafficLevel = determineTrafficLevel(totalEmployees, companyData.diasLaborales, companyData.horasLaborales);
     const segment = companyData.bathroomSegment; // Use user-selected segment
@@ -285,15 +280,22 @@ function generateRecommendations() {
         }
     });
 
-    // Calcular consumo mensual
-    calculateConsumption(segment, trafficLevel, totalEmployees);
+    // Calculate consumption - import dynamically to avoid circular dependency
+    import('./api.js').then(module => {
+        module.calculateConsumption(segment, trafficLevel, totalEmployees);
+    });
 }
 
 /**
  * Display recommendations with consumption data
  * Main function for rendering the final recommendations page
+ * @param {string} segment - Bathroom segment
+ * @param {string} trafficLevel - Traffic level
+ * @param {Object} consumptionData - Consumption data for products
  */
-function displayRecommendationsWithConsumption(segment, trafficLevel, consumptionData) {
+export function displayRecommendationsWithConsumption(segment, trafficLevel, consumptionData) {
+    const state = getState();
+    const { companyData, productData } = state;
     const totalEmployees = companyData.numMujeres + companyData.numHombres;
 
     // Mapear tipos de público para mostrar
@@ -316,6 +318,13 @@ function displayRecommendationsWithConsumption(segment, trafficLevel, consumptio
     let recommendationsHTML = `
         <div class="recommendation" id="report-content">
             <h2>Recomendaciones Personalizadas</h2>
+
+            <div id="pdf-disclaimer" style="display: none; background: #fff3cd; border: 2px solid #00205b; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <p style="margin: 0; font-weight: bold; color: #00205b; line-height: 1.6; text-align: justify;">
+                    Los resultados arrojados son estimaciones de promedios de consumo según análisis que hemos realizado en diferentes industrias y empresas durante años. Pueden variar si hay modificación en la data, por tanto, no son un compromiso con respecto al consumo. Recomendamos hacer el ensayo en el cliente final, para entender a cabalidad sus comportamientos y consumos.
+                </p>
+            </div>
+
             <div class="company-summary">
                 <h3>Resumen de su Empresa</h3>
                 <p><strong>Sector:</strong> ${companyData.sector}</p>
@@ -332,25 +341,23 @@ function displayRecommendationsWithConsumption(segment, trafficLevel, consumptio
             </div>
     `;
 
-    // El consumo mensual ahora está integrado directamente con cada recomendación de producto
-
     // Mostrar recomendaciones de productos con consumo integrado
     companyData.products.forEach(product => {
-        const recommendation = productData[product] && productData[product][segment] && productData[product][segment][trafficLevel] ? productData[product][segment][trafficLevel] : null;
+        const recommendation = productData[product]?.[segment]?.[trafficLevel];
         const productConsumption = consumptionData[product];
 
         recommendationsHTML += `<h3 style="color: #00205b; font-size: 1.8em; margin: 30px 0 20px 0; border-bottom: 3px solid #00205b; padding-bottom: 10px;">${product}</h3>`;
 
         // Add selected reference and dispenser images
-        const selectedReference = companyData.selectedReferences ? companyData.selectedReferences[product] : (productConsumption ? productConsumption.referencia_usada : '');
+        const selectedReference = companyData.selectedReferences?.[product] ?? productConsumption?.referencia_usada ?? '';
 
         // Get the first dispenser for this product
-        const productRecommendation = productData[product] && productData[product][segment] && productData[product][segment][trafficLevel] ? productData[product][segment][trafficLevel] : null;
+        const productRecommendation = productData[product]?.[segment]?.[trafficLevel];
         let selectedDispenser = '';
         if (productRecommendation) {
             if (Array.isArray(productRecommendation) && productRecommendation.length > 0) {
-                selectedDispenser = productRecommendation[0].dispensador[0];
-            } else if (productRecommendation && productRecommendation.dispensador) {
+                selectedDispenser = productRecommendation[0].dispensador?.[0];
+            } else if (productRecommendation?.dispensador) {
                 selectedDispenser = productRecommendation.dispensador[0];
             }
         }
@@ -360,20 +367,7 @@ function displayRecommendationsWithConsumption(segment, trafficLevel, consumptio
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
             `;
 
-            if (selectedReference) {
-                recommendationsHTML += `
-                    <div class="reference-image-container" style="text-align: center; padding: 20px; background: white; border: 2px solid #00205b;">
-                        <h4 style="color: #00205b; margin-bottom: 15px; font-weight: 600;">Referencia Seleccionada: ${selectedReference}</h4>
-                        <img src="/static/images/${selectedReference}.png" alt="Imagen de referencia ${selectedReference}"
-                             style="max-width: 300px; max-height: 200px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; padding: 10px; display: block; margin: 0 auto;"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <div style="display: none; color: #64748b; font-style: italic; padding: 20px;">
-                            Imagen no disponible para la referencia ${selectedReference}
-                        </div>
-                    </div>
-                `;
-            }
-
+            // Dispenser now appears first (left side)
             if (selectedDispenser) {
                 recommendationsHTML += `
                     <div class="dispenser-image-container" style="text-align: center; padding: 20px; background: white; border: 2px solid #00205b;">
@@ -388,6 +382,21 @@ function displayRecommendationsWithConsumption(segment, trafficLevel, consumptio
                 `;
             }
 
+            // Reference now appears second (right side)
+            if (selectedReference) {
+                recommendationsHTML += `
+                    <div class="reference-image-container" style="text-align: center; padding: 20px; background: white; border: 2px solid #00205b;">
+                        <h4 style="color: #00205b; margin-bottom: 15px; font-weight: 600;">Referencia Seleccionada: ${selectedReference}</h4>
+                        <img src="/static/images/${selectedReference}.png" alt="Imagen de referencia ${selectedReference}"
+                             style="max-width: 300px; max-height: 200px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; padding: 10px; display: block; margin: 0 auto;"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display: none; color: #64748b; font-style: italic; padding: 20px;">
+                            Imagen no disponible para la referencia ${selectedReference}
+                        </div>
+                    </div>
+                `;
+            }
+
             recommendationsHTML += `
                 </div>
             `;
@@ -395,147 +404,153 @@ function displayRecommendationsWithConsumption(segment, trafficLevel, consumptio
 
         // Check if there are recommendations
         const hasReferences = recommendation && (
-            (Array.isArray(recommendation) && recommendation.length > 0 && recommendation[0].referencias && recommendation[0].referencias.length > 0) ||
-            (!Array.isArray(recommendation) && recommendation.referencias && recommendation.referencias.length > 0)
+            (Array.isArray(recommendation) && recommendation.length > 0 && recommendation[0].referencias?.length > 0) ||
+            (!Array.isArray(recommendation) && recommendation.referencias?.length > 0)
         );
 
         if (!hasReferences) {
-            // No recommendations available - show message and consumption selector
-            recommendationsHTML += `
-                <div class="recommendation-group" style="margin-bottom: 25px;">
-                    <div class="recommendation-grid">
-                        <div>
-                            <h3 class="recommendation-option-title">No hay sugerencias disponibles</h3>
-                            <p style="color: #64748b; margin-top: 10px;">No se encontraron recomendaciones específicas para este producto en el segmento y nivel de tráfico seleccionados.</p>
-                        </div>
-                        <div class="consumption-item">
-                            <h4 class="consumption-title">
-                                Consumo Mensual
-                            </h4>
-                            <div class="reference-selector">
-                                <label for="ref-${product.replace(/\s/g, '-')}">Referencia actual:</label>
-                                <select id="ref-${product.replace(/\s/g, '-')}" data-producto="${product}" class="reference-select">
-                                    <option value="${companyData.selectedReferences ? companyData.selectedReferences[product] : (productConsumption ? productConsumption.referencia_usada : '')}">${companyData.selectedReferences ? companyData.selectedReferences[product] : (productConsumption ? productConsumption.referencia_usada : '')}</option>
-                                </select>
-                                <button class="recalculate-btn" onclick="recalcularConsumo('${product}', false, this)">Recalcular</button>
-                            </div>
-                            <p class="consumption-value" id="consumo-${product.replace(/\s/g, '-')}">
-                                ${productConsumption ? productConsumption.consumo_mensual + ' cajas/mes' : 'No aplica'}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            `;
+            // No recommendations available
+            recommendationsHTML += generateNoRecommendationsHTML(product, productConsumption, companyData);
         } else if (Array.isArray(recommendation)) {
-
-            recommendation.forEach((rec, index) => {
-                recommendationsHTML += `
-                    <div class="recommendation-group" style="margin-bottom: 25px;">
-                        <div class="recommendation-grid">
-                            <div>
-                                <h3 class="recommendation-option-title">Opción ${index + 1}: ${rec.posicionamiento}</h3>
-                                <div class="recommendation-section">
-                                    <h4 class="recommendation-section-title">Referencias:</h4>
-                                    <div class="button-container">
-                                        ${rec.referencias.map(ref => `
-                                            <button type="button" onclick="handleReferenceClick('${ref}', '${product}')" class="reference-button">${ref}</button>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                                <div class="recommendation-section">
-                                    <h4 class="recommendation-section-title">Dispensador:</h4>
-                                    <div class="button-container">
-                                        ${rec.dispensador.map(disp => `
-                                            <button type="button" onclick="handleDispenserClick('${disp}', '${product}')" class="dispenser-button">${disp}</button>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                            </div>
-
-                            ${productConsumption && index === 0 ? `
-                                <div class="consumption-item">
-                                    <h4 class="consumption-title">
-                                        Consumo Mensual
-                                    </h4>
-                                    <div class="reference-selector">
-                                        <label for="ref-${product.replace(/\s/g, '-')}">Referencia actual:</label>
-                                        <select id="ref-${product.replace(/\s/g, '-')}" data-producto="${product}" class="reference-select">
-                                            <option value="${companyData.selectedReferences ? companyData.selectedReferences[product] : productConsumption.referencia_usada}">${companyData.selectedReferences ? companyData.selectedReferences[product] : productConsumption.referencia_usada}</option>
-                                        </select>
-                                        <button class="recalculate-btn" onclick="recalcularConsumo('${product}', false, this)">Recalcular</button>
-                                    </div>
-                                    <p class="consumption-value" id="consumo-${product.replace(/\s/g, '-')}">
-                                        ${productConsumption.consumo_mensual} cajas/mes
-                                    </p>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            });
+            recommendationsHTML += generateMultipleRecommendationsHTML(recommendation, product, productConsumption, companyData);
         } else {
-
-            recommendationsHTML += `
-                <div class="recommendation-group" style="margin-bottom: 25px;">
-                    <div class="recommendation-grid">
-                        <div>
-                            <h3 class="recommendation-option-title">${recommendation.posicionamiento}</h3>
-                            <div class="recommendation-section">
-                                <h4 class="recommendation-section-title">Referencias:</h4>
-                                <div class="button-container">
-                                    ${recommendation.referencias.map(ref => `
-                                        <button type="button" onclick="handleReferenceClick('${ref}', '${product}')" class="reference-button">${ref}</button>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <div class="recommendation-section">
-                                <h4 class="recommendation-section-title">Dispensador:</h4>
-                                <div class="button-container">
-                                    ${recommendation.dispensador.map(disp => `
-                                        <button type="button" onclick="handleDispenserClick('${disp}', '${product}')" class="dispenser-button">${disp}</button>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        </div>
-                        ${productConsumption ? `
-                            <div class="consumption-item">
-                                <h4 class="consumption-title">
-                                    Consumo Mensual
-                                </h4>
-                                <div class="reference-selector">
-                                    <label for="ref-${product.replace(/\s/g, '-')}">Referencia actual:</label>
-                                    <select id="ref-${product.replace(/\s/g, '-')}" data-produto="${product}" class="reference-select">
-                                        <option value="${companyData.selectedReferences ? companyData.selectedReferences[product] : productConsumption.referencia_usada}">${companyData.selectedReferences ? companyData.selectedReferences[product] : productConsumption.referencia_usada}</option>
-                                    </select>
-                                    <button class="recalculate-btn" onclick="recalcularConsumo('${product}', false, this)"
-                                            style="background: #00853F; color: white; border: none;
-                                                   padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;
-                                                   box-shadow: 0 4px 15px rgba(0, 133, 63, 0.3);">Recalcular</button>
-                                </div>
-                                <p class="consumption-value" id="consumo-${product.replace(/\s/g, '-')}"
-                                   style="font-size: 1.3em; font-weight: 700; color: #00853F; margin: 10px 0 0 0;">
-                                    ${productConsumption.consumo_mensual} cajas/mes
-                                </p>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
+            recommendationsHTML += generateSingleRecommendationHTML(recommendation, product, productConsumption, companyData);
         }
     });
 
     recommendationsHTML += `
         </div>
         <div class="navigation-buttons">
-            <button class="nav-button btn-prev" onclick="startQuiz()">Comenzar de Nuevo</button>
-            <button class="nav-button btn-next" onclick="generatePDF()">Generar Reporte</button>
+            <button class="nav-button btn-prev" data-action="start-quiz">Comenzar de Nuevo</button>
+            <button class="nav-button btn-next" data-action="generate-pdf">Generar Reporte</button>
         </div>
     `;
 
     document.getElementById('quiz-container').innerHTML = recommendationsHTML;
 
-    // Cargar referencias para cada producto después de renderizar
+    // Load references for each product after rendering
     companyData.products.forEach(producto => {
         loadReferencesForProduct(producto);
     });
+}
+
+// Helper functions for generating HTML sections
+
+function generateNoRecommendationsHTML(product, productConsumption, companyData) {
+    const selectedRef = companyData.selectedReferences?.[product] ?? productConsumption?.referencia_usada ?? '';
+    const consumoValue = productConsumption ? `${productConsumption.consumo_mensual} cajas/mes` : 'No aplica';
+
+    return `
+        <div class="recommendation-group" style="margin-bottom: 25px;">
+            <div class="recommendation-grid">
+                <div>
+                    <h3 class="recommendation-option-title">No hay sugerencias disponibles</h3>
+                    <p style="color: #64748b; margin-top: 10px;">No se encontraron recomendaciones específicas para este producto en el segmento y nivel de tráfico seleccionados.</p>
+                </div>
+                <div class="consumption-item">
+                    <h4 class="consumption-title">Consumo Mensual</h4>
+                    <div class="reference-selector">
+                        <label for="ref-${product.replace(/\s/g, '-')}">Referencia actual:</label>
+                        <select id="ref-${product.replace(/\s/g, '-')}" data-producto="${product}" class="reference-select">
+                            <option value="${selectedRef}">${selectedRef}</option>
+                        </select>
+                        <button class="recalculate-btn" data-action="recalculate" data-product="${product}">Recalcular</button>
+                    </div>
+                    <p class="consumption-value" id="consumo-${product.replace(/\s/g, '-')}">${consumoValue}</p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generateMultipleRecommendationsHTML(recommendations, product, productConsumption, companyData) {
+    let html = '';
+    recommendations.forEach((rec, index) => {
+        const selectedRef = companyData.selectedReferences?.[product] ?? productConsumption?.referencia_usada ?? '';
+        const consumoValue = productConsumption?.consumo_mensual ? `${productConsumption.consumo_mensual} cajas/mes` : 'No aplica';
+
+        html += `
+            <div class="recommendation-group" style="margin-bottom: 25px;">
+                <div class="recommendation-grid">
+                    <div>
+                        <h3 class="recommendation-option-title">Opción ${index + 1}: ${rec.posicionamiento}</h3>
+                        <div class="recommendation-section">
+                            <h4 class="recommendation-section-title">Referencias:</h4>
+                            <div class="button-container">
+                                ${rec.referencias.map(ref => `
+                                    <button type="button" data-action="select-reference" data-reference="${ref}" data-product="${product}" class="reference-button">${ref}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="recommendation-section">
+                            <h4 class="recommendation-section-title">Dispensador:</h4>
+                            <div class="button-container">
+                                ${rec.dispensador.map(disp => `
+                                    <button type="button" data-action="select-dispenser" data-dispenser="${disp}" data-product="${product}" class="dispenser-button">${disp}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    ${productConsumption && index === 0 ? `
+                        <div class="consumption-item">
+                            <h4 class="consumption-title">Consumo Mensual</h4>
+                            <div class="reference-selector">
+                                <label for="ref-${product.replace(/\s/g, '-')}">Referencia actual:</label>
+                                <select id="ref-${product.replace(/\s/g, '-')}" data-producto="${product}" class="reference-select">
+                                    <option value="${selectedRef}">${selectedRef}</option>
+                                </select>
+                                <button class="recalculate-btn" data-action="recalculate" data-product="${product}">Recalcular</button>
+                            </div>
+                            <p class="consumption-value" id="consumo-${product.replace(/\s/g, '-')}">${consumoValue}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
+    return html;
+}
+
+function generateSingleRecommendationHTML(recommendation, product, productConsumption, companyData) {
+    const selectedRef = companyData.selectedReferences?.[product] ?? productConsumption?.referencia_usada ?? '';
+    const consumoValue = productConsumption?.consumo_mensual ? `${productConsumption.consumo_mensual} cajas/mes` : 'No aplica';
+
+    return `
+        <div class="recommendation-group" style="margin-bottom: 25px;">
+            <div class="recommendation-grid">
+                <div>
+                    <h3 class="recommendation-option-title">${recommendation.posicionamiento}</h3>
+                    <div class="recommendation-section">
+                        <h4 class="recommendation-section-title">Referencias:</h4>
+                        <div class="button-container">
+                            ${recommendation.referencias.map(ref => `
+                                <button type="button" data-action="select-reference" data-reference="${ref}" data-product="${product}" class="reference-button">${ref}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="recommendation-section">
+                        <h4 class="recommendation-section-title">Dispensador:</h4>
+                        <div class="button-container">
+                            ${recommendation.dispensador.map(disp => `
+                                <button type="button" data-action="select-dispenser" data-dispenser="${disp}" data-product="${product}" class="dispenser-button">${disp}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                ${productConsumption ? `
+                    <div class="consumption-item">
+                        <h4 class="consumption-title">Consumo Mensual</h4>
+                        <div class="reference-selector">
+                            <label for="ref-${product.replace(/\s/g, '-')}">Referencia actual:</label>
+                            <select id="ref-${product.replace(/\s/g, '-')}" data-producto="${product}" class="reference-select">
+                                <option value="${selectedRef}">${selectedRef}</option>
+                            </select>
+                            <button class="recalculate-btn" data-action="recalculate" data-product="${product}">Recalcular</button>
+                        </div>
+                        <p class="consumption-value" id="consumo-${product.replace(/\s/g, '-')}">${consumoValue}</p>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
 }

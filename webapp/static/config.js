@@ -1,10 +1,26 @@
 /**
  * config.js
+ * Configuración y definición de pasos del cuestionario para Consultor Integral.
+ *
+ * DESCRIPCIÓN:
+ * Define la estructura del cuestionario multi-paso (wizard) incluyendo contenido HTML,
+ * títulos, descripciones y validaciones para cada paso. Los pasos incluyen información
+ * de la empresa, demografía, tipo de público, y selección de productos.
+ *
+ * PASOS DEL CUESTIONARIO:
+ * 1. company-sector: Información de la empresa (sector y tamaño)
+ * 2. demographics: Demografía y jornada laboral (empleados, días, horas)
+ * 3. public-type: Tipo de público (administrativo, operativo, flotante)
+ * 4. product-selection: Selección de productos y segmento de baños
+ *
  * Configuration and step definitions for Consultor Integral
  */
 
-// Step definitions for the wizard
-const steps = [
+/**
+ * Step definitions for the wizard
+ * Each step contains: id, title, shortTitle, icon, description, and content HTML
+ */
+export const steps = [
     {
         id: 'company-sector',
         title: 'Información de la Empresa',
